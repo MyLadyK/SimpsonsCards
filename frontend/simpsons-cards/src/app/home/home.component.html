@@ -1,12 +1,9 @@
 <div class="container">
   <div class="text-center mt-5">
-    <h1>Welcome to Springfield Shuffle</h1>
+    <h1>Welcome to The Simpsons Cards</h1>
     <p class="lead">Join the world's most famous family in their daily adventures. Collect iconic moments, rare episodes, and exclusive character cards from The Simpsons universe.</p>
-
-    <div class="mt-4">
-      <a routerLink="/sign-in" class="btn btn-outline-primary mx-2">Sign In</a>
-      <a routerLink="/sign-up" class="btn btn-primary mx-2">Sign Up</a>
-    </div>
+    <button class="btn btn-primary" (click)="goToSignIn()">Sign In</button>
+    <button class="btn btn-outline-primary" (click)="goToSignUp()">Sign Up</button>
   </div>
 
   <!-- Carrusel de Bootstrap -->
