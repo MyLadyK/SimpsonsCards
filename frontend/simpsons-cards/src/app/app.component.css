@@ -39,15 +39,19 @@ body, html {
 }
 
 .carousel-caption h5 {
-  color: #ffcc00;
+  color: #000000;
   font-size: 2.5rem;
   font-weight: 700;
+  text-shadow: 2px 2px 4px rgb(255, 255, 255);
+  margin-bottom: 1rem;
 }
 
 .carousel-caption p {
   color: #000000;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
+  font-weight: 600;
   text-shadow: 2px 2px 4px rgb(255, 255, 255);
+  line-height: 1.6;
 }
 
 .carousel-indicators {
@@ -93,7 +97,7 @@ body, html {
 }
 
 h1 {
-  color: #000;
+  color: #ffcc00;
   font-size: 3.5rem;
   font-weight: 700;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
@@ -105,7 +109,11 @@ h1 {
   color: #333;
   margin-bottom: 30px;
   line-height: 1.6;
-  max-width: 800px;
+  max-width: 1000px;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 20px;
 }
 
 .btn {

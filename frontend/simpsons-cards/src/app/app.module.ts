@@ -1,21 +1,24 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { RouterModule, Routes } from '@angular/router';
-import { AppComponent } from './app.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
-const routes: Routes = [
-  { path: 'sign-in', loadChildren: () => import('./auth/sign-in/sign-in.module').then(m => m.SignInModule) },
-  { path: 'sign-up', loadChildren: () => import('./auth/sign-up/sign-up.module').then(m => m.SignUpModule) },
-  { path: '', redirectTo: 'sign-in', pathMatch: 'full' }
-];
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { SignUpComponent } from './auth/sign-up/sign-up.component';
+import { SignInComponent } from './auth/sign-in/sign-in.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    SignUpComponent,
+    SignInComponent
   ],
   imports: [
     BrowserModule,
-    RouterModule.forRoot(routes)
+    AppRoutingModule,
+    ReactiveFormsModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

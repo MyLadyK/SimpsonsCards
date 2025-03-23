@@ -1,17 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginComponent } from './components/login/login.component';
-import { RegisterComponent } from './components/register/register.component';
-import { CardDrawComponent } from './components/card-draw/card-draw.component';
-import { CardCollectionComponent } from './components/card-collection/card-collection.component';
-import { AuthGuard } from './guards/auth.guard';
+import { SignUpComponent } from './auth/sign-up/sign-up.component';
+import { SignInComponent } from './auth/sign-in/sign-in.component';
 
 const routes: Routes = [
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'card-draw', component: CardDrawComponent, canActivate: [AuthGuard] },
-  { path: 'card-collection', component: CardCollectionComponent, canActivate: [AuthGuard] },
-  { path: '', redirectTo: 'login', pathMatch: 'full' }
+  { path: 'sign-in', component: SignInComponent },
+  { path: 'sign-up', component: SignUpComponent },
+  { path: '', redirectTo: 'sign-in', pathMatch: 'full' }
 ];
 
 @NgModule({
