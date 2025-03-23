@@ -1,4 +1,4 @@
-/* Estilos generales con la temática de Los Simpson */
+/* Estilos generales */
 :host {
   display: block;
   min-height: 100vh;
@@ -8,7 +8,7 @@
   padding: 0;
 }
 
-/* Eliminar márgenes y padding del body */
+
 body, html {
   margin: 0;
   padding: 0;
@@ -45,8 +45,9 @@ body, html {
 }
 
 .carousel-caption p {
-  color: #fff;
+  color: #000000;
   font-size: 1.2rem;
+  text-shadow: 2px 2px 4px rgb(255, 255, 255);
 }
 
 .carousel-indicators {
