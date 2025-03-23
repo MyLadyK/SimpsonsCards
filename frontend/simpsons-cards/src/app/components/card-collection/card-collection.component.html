@@ -1,0 +1,28 @@
+<div class="card-collection-container">
+  <div class="header">
+    <h1>My Card Collection</h1>
+    <button class="btn-secondary" (click)="logout()">Logout</button>
+  </div>
+
+  <div class="cards-section">
+    <div class="card-grid">
+      <div class="card" *ngFor="let card of cards">
+        <img [src]="card.image_url" [alt]="card.character_name" class="card-image">
+        <div class="card-info">
+          <h3>{{ card.character_name }}</h3>
+          <p class="rarity">{{ card.rarity }}</p>
+          <p>{{ card.description }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading" *ngIf="isLoading">
+    <p>Loading cards...</p>
+  </div>
+
+  <div class="empty-state" *ngIf="!isLoading && cards.length === 0">
+    <p>You don't have any cards yet. Go to the card draw page to get some!</p>
+    <button class="btn-primary" routerLink="/card-draw">Draw Cards</button>
+  </div>
+</div>

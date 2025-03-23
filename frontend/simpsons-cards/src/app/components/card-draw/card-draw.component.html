@@ -1,0 +1,34 @@
+<div class="card-draw-container">
+  <div class="header">
+    <h1>Simpsons Cards</h1>
+    <button class="btn-secondary" (click)="logout()">Logout</button>
+  </div>
+
+  <div class="draw-section" *ngIf="remainingDraws > 0">
+    <h2>Draw Cards</h2>
+    <p>You have {{ remainingDraws }} draws remaining today</p>
+    <button class="btn-primary" (click)="drawCards()" [disabled]="isLoading">
+      <span *ngIf="isLoading">Drawing...</span>
+      <span *ngIf="!isLoading">Draw Cards</span>
+    </button>
+  </div>
+
+  <div class="draw-section" *ngIf="remainingDraws <= 0">
+    <h2>No Draws Remaining</h2>
+    <p>You can draw again at {{ nextDrawTime | date:'medium' }}</p>
+  </div>
+
+  <div class="cards-section" *ngIf="cards.length > 0">
+    <h2>Your Cards</h2>
+    <div class="card-grid">
+      <div class="card" *ngFor="let card of cards">
+        <img [src]="card.image_url" [alt]="card.character_name" class="card-image">
+        <div class="card-info">
+          <h3>{{ card.character_name }}</h3>
+          <p class="rarity">{{ card.rarity }}</p>
+          <p>{{ card.description }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

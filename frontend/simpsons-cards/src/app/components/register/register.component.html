@@ -1,0 +1,51 @@
+<div class="register-container">
+  <h2>Register</h2>
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input type="text" id="username" formControlName="username" class="form-control" required>
+      <div *ngIf="registerForm.get('username')?.invalid && (registerForm.get('username')?.dirty || registerForm.get('username')?.touched)" class="error">
+        <div *ngIf="registerForm.get('username')?.errors?.['required']">
+          Username is required
+        </div>
+        <div *ngIf="registerForm.get('username')?.errors?.['minlength']">
+          Username must be at least 3 characters long
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" formControlName="password" class="form-control" required>
+      <div *ngIf="registerForm.get('password')?.invalid && (registerForm.get('password')?.dirty || registerForm.get('password')?.touched)" class="error">
+        <div *ngIf="registerForm.get('password')?.errors?.['required']">
+          Password is required
+        </div>
+        <div *ngIf="registerForm.get('password')?.errors?.['minlength']">
+          Password must be at least 6 characters long
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="confirmPassword">Confirm Password</label>
+      <input type="password" id="confirmPassword" formControlName="confirmPassword" class="form-control" required>
+      <div *ngIf="registerForm.get('confirmPassword')?.invalid && (registerForm.get('confirmPassword')?.dirty || registerForm.get('confirmPassword')?.touched)" class="error">
+        <div *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">
+          Please confirm your password
+        </div>
+        <div *ngIf="registerForm.get('confirmPassword')?.errors?.['passwordMismatch']">
+          Passwords do not match
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="error" class="error">{{ error }}</div>
+
+    <button type="submit" class="btn-primary" [disabled]="!registerForm.valid">Register</button>
+  </form>
+
+  <div class="login-link">
+    <a routerLink="/login">Already have an account? Login here</a>
+  </div>
+</div>
