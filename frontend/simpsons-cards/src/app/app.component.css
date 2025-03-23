@@ -1,0 +1,126 @@
+/* Estilos generales con la temática de Los Simpson */
+:host {
+  display: block;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #ff9900, #ffcc00);
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+/* Eliminar márgenes y padding del body */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo para el contenido principal */
+.main-content {
+  padding: 40px 20px;
+}
+
+h1 {
+  color: #000;
+  font-size: 3.5rem;
+  font-weight: 700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.lead {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 30px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.btn {
+  padding: 15px 40px;
+  font-size: 1.2rem;
+  border-radius: 30px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 0 10px;
+}
+
+.btn-outline-primary {
+  color: #000;
+  border-color: #333;
+  background: transparent;
+  font-weight: 600;
+}
+
+.btn-outline-primary:hover {
+  background: #333;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* Agregando un patrón de puntos sutil */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle, rgba(255, 153, 0, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  z-index: -1;
+}
+
+/* Estilo para el header */
+app-header {
+  margin-bottom: 2rem;
+}
+
+/* Estilo para el footer */
+footer {
+  background: #333;
+  color: #fff;
+  padding: 2rem 0;
+  margin-top: 2rem;
+  text-align: center;
+}
+
+footer a {
+  color: #ff9900;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  margin: 0 10px;
+}
+
+footer a:hover {
+  color: #ffcc00;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+  
+  h1 {
+    font-size: 2.5rem;
+  }
+  
+  .lead {
+    font-size: 1.2rem;
+  }
+  
+  .btn {
+    padding: 12px 25px;
+    font-size: 1rem;
+  }
+}
