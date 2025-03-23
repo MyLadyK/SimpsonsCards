@@ -2,11 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-sign-up',
   templateUrl: './sign-up.component.html',
-  styleUrls: ['./sign-up.component.css']
+  styleUrls: ['./sign-up.component.css'],
+  imports: [CommonModule, ReactiveFormsModule],
+  standalone: true
 })
 export class SignUpComponent implements OnInit {
   registerForm: FormGroup;
@@ -20,38 +24,31 @@ export class SignUpComponent implements OnInit {
   ) {
     this.registerForm = this.formBuilder.group({
       username: ['', [Validators.required, Validators.minLength(3)]],
-      email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', Validators.required]
+      confirmPassword: ['', [Validators.required]]
     }, {
       validators: this.passwordMatchValidator
     });
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
-  passwordMatchValidator(formGroup: FormGroup) {
-    const password = formGroup.get('password')?.value;
-    const confirmPassword = formGroup.get('confirmPassword')?.value;
+  passwordMatchValidator(control: AbstractControl): { [key: string]: boolean } | null {
+    const password = control.get('password');
+    const confirmPassword = control.get('confirmPassword');
 
-    if (password !== confirmPassword) {
-      formGroup.get('confirmPassword')?.setErrors({ mustMatch: true });
-    } else {
-      formGroup.get('confirmPassword')?.setErrors(null);
+    if (password?.value !== confirmPassword?.value) {
+      return { mustMatch: true };
     }
+    return null;
   }
 
-  onSubmit() {
+  onSubmit(): void {
     if (this.registerForm.valid) {
       this.loading = true;
-      this.errorMessage = null;
-
       const user = {
-        username: this.registerForm.value.username,
-        email: this.registerForm.value.email,
-        password: this.registerForm.value.password,
-        confirmPassword: this.registerForm.value.confirmPassword
+        username: this.registerForm.get('username')?.value,
+        password: this.registerForm.get('password')?.value
       };
 
       this.authService.register(user).subscribe({
@@ -59,8 +56,8 @@ export class SignUpComponent implements OnInit {
           this.router.navigate(['/sign-in']);
         },
         error: (error) => {
+          this.errorMessage = error.error.message || 'Registration failed';
           this.loading = false;
-          this.errorMessage = error.error?.message || 'Registration failed. Please try again.';
         }
       });
     }

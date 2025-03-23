@@ -1,12 +1,17 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css'],
+  imports: [
+    CommonModule,
+    RouterOutlet
+  ],
+  standalone: true
 })
 export class AppComponent {
-  title = 'simpsons-cards';
+  title = 'Simpsons Cards';
 }

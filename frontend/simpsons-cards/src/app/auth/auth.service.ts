@@ -3,11 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
-export interface User {
+export interface RegisterUser {
   username: string;
-  email: string;
   password: string;
-  confirmPassword: string;
+}
+
+export interface LoginCredentials {
+  username: string;
+  password: string;
 }
 
 @Injectable({
@@ -18,12 +21,12 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  register(user: User): Observable<any> {
+  register(user: RegisterUser): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/register`, user);
   }
 
-  login(username: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/auth/login`, { username, password });
+  login(credentials: LoginCredentials): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/login`, credentials);
   }
 
   isLoggedIn(): boolean {

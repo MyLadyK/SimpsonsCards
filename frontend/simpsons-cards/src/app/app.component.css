@@ -1,6 +1,7 @@
 /* Estilos generales */
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
   background: linear-gradient(135deg, #ff9900, #ffcc00);
   color: #333;
@@ -8,145 +9,15 @@
   padding: 0;
 }
 
-
 body, html {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
   overflow-x: hidden;
-}
-
-/* Estilos para el carrusel */
-.carousel {
-  position: relative;
-  margin-bottom: 40px;
-}
-
-.carousel-item {
-  height: 500px;
-}
-
-.carousel-item img {
-  object-fit: cover;
-  height: 100%;
-  width: 100%;
-}
-
-.carousel-caption {
-  bottom: 100px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.carousel-caption h5 {
-  color: #000000;
-  font-size: 2.5rem;
-  font-weight: 700;
-  text-shadow: 2px 2px 4px rgb(255, 255, 255);
-  margin-bottom: 1rem;
-}
-
-.carousel-caption p {
-  color: #000000;
-  font-size: 1.5rem;
-  font-weight: 600;
-  text-shadow: 2px 2px 4px rgb(255, 255, 255);
-  line-height: 1.6;
-}
-
-.carousel-indicators {
-  bottom: 20px;
-}
-
-.carousel-indicators button {
-  background-color: #ffcc00;
-  border: none;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  opacity: 0.5;
-}
-
-.carousel-indicators button.active {
-  opacity: 1;
-}
-
-.carousel-control-prev,
-.carousel-control-next {
-  filter: brightness(0) invert(1);
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-/* Estilo para el contenido principal */
-.main-content {
-  flex: 1;
-  padding: 50px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-h1 {
-  color: #ffcc00;
-  font-size: 3.5rem;
-  font-weight: 700;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  margin-bottom: 20px;
-}
-
-.lead {
-  font-size: 1.5rem;
-  color: #333;
-  margin-bottom: 30px;
-  line-height: 1.6;
-  max-width: 1000px;
-  text-align: center;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0 20px;
-}
-
-.btn {
-  padding: 15px 40px;
-  font-size: 1.2rem;
-  border-radius: 30px;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin: 0 10px;
-}
-
-.btn-outline-primary {
-  color: #000;
-  border-color: #333;
-  background: transparent;
-  font-weight: 600;
-}
-
-.btn-outline-primary:hover {
-  background: #333;
-  color: #fff;
-  transform: translateY(-2px);
-}
-
-.btn-primary {
-  background-color: #ffcc00;
-  border: none;
-  color: #000;
-}
-
-.btn-primary:hover {
-  background-color: #ffaa00;
-  transform: translateY(-2px);
 }
 
 /* Agregando un patrón sutil de fondo */
@@ -158,7 +29,7 @@ body::before {
   width: 100%;
   height: 100%;
   background-image: radial-gradient(circle, rgba(255, 153, 0, 0.15) 1px, transparent 1px);
-  background-size: 25px 25px;
+  background-size: 30px 30px;
   z-index: -1;
 }
 
@@ -167,26 +38,29 @@ app-header {
   width: 100%;
   position: sticky;
   top: 0;
-  background: rgba(255, 153, 0, 0.9);
-  padding: 15px 0;
+  background: rgba(255, 153, 0, 0.95);
+  padding: 20px 0;
   z-index: 1000;
+  display: flex;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Estilo para el footer */
 footer {
   background: #222;
   color: #fff;
-  padding: 2rem 0;
+  padding: 2.5rem 0;
   margin-top: auto;
   text-align: center;
-  font-size: 1rem;
+  font-size: 1.1rem;
 }
 
 footer a {
   color: #ffcc00;
   text-decoration: none;
   transition: color 0.3s ease;
-  margin: 0 10px;
+  margin: 0 12px;
 }
 
 footer a:hover {
@@ -195,36 +69,7 @@ footer a:hover {
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .carousel-item {
-    height: 300px;
-  }
-  
-  .carousel-caption {
-    bottom: 50px;
-  }
-  
-  .carousel-caption h5 {
-    font-size: 2rem;
-  }
-  
-  .carousel-caption p {
-    font-size: 1rem;
-  }
-  
-  h1 {
-    font-size: 2.5rem;
-  }
-  
-  .lead {
-    font-size: 1.2rem;
-  }
-  
-  .btn {
-    padding: 12px 25px;
-    font-size: 1rem;
-  }
-  
-  .container {
-    padding: 20px;
+  app-header {
+    padding: 15px 0;
   }
 }

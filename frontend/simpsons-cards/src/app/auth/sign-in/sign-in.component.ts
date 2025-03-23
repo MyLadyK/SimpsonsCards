@@ -1,12 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../auth.service';
+import { AuthService, LoginCredentials } from '../auth.service';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-sign-in',
   templateUrl: './sign-in.component.html',
-  styleUrls: ['./sign-in.component.css']
+  styleUrls: ['./sign-in.component.css'],
+  imports: [CommonModule, ReactiveFormsModule],
+  standalone: true
 })
 export class SignInComponent implements OnInit {
   loginForm: FormGroup;
@@ -24,26 +28,23 @@ export class SignInComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
-  onSubmit() {
+  onSubmit(): void {
     if (this.loginForm.valid) {
       this.loading = true;
-      this.errorMessage = null;
-
-      const credentials = {
-        username: this.loginForm.value.username,
-        password: this.loginForm.value.password
+      const credentials: LoginCredentials = {
+        username: this.loginForm.get('username')?.value,
+        password: this.loginForm.get('password')?.value
       };
 
-      this.authService.login(credentials.username, credentials.password).subscribe({
+      this.authService.login(credentials).subscribe({
         next: (response) => {
           this.router.navigate(['/']);
         },
         error: (error) => {
+          this.errorMessage = error.error.message || 'Login failed';
           this.loading = false;
-          this.errorMessage = error.error?.message || 'Login failed. Please try again.';
         }
       });
     }
