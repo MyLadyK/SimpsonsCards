@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 
 const authRoutes = require('./routes/auth');
 const cardRoutes = require('./routes/cards');
@@ -11,6 +12,15 @@ const port = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Serve static assets in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('frontend/dist/simpsons-cards'));
+  
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'frontend', 'dist', 'simpsons-cards', 'index.html'));
+  });
+}
 
 // Routes
 app.use('/api/auth', authRoutes);
