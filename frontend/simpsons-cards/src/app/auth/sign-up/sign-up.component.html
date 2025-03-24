@@ -17,15 +17,6 @@
             </div>
 
             <div class="mb-3">
-              <label for="email" class="form-label">Email</label>
-              <input type="email" class="form-control" id="email" formControlName="email" required>
-              <div *ngIf="registerForm.get('email')?.invalid && (registerForm.get('email')?.dirty || registerForm.get('email')?.touched)" class="text-danger">
-                <small *ngIf="registerForm.get('email')?.errors?.['required']">Email is required</small>
-                <small *ngIf="registerForm.get('email')?.errors?.['email']">Please enter a valid email address</small>
-              </div>
-            </div>
-
-            <div class="mb-3">
               <label for="password" class="form-label">Password</label>
               <input type="password" class="form-control" id="password" formControlName="password" required>
               <div *ngIf="registerForm.get('password')?.invalid && (registerForm.get('password')?.dirty || registerForm.get('password')?.touched)" class="text-danger">
