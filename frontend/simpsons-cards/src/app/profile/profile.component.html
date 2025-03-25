@@ -11,6 +11,16 @@
       <p>{{ cards.length }} cards in collection</p>
     </div>
 
+    <div class="claim-section">
+      <button (click)="claimCards()" class="claim-button">Claim 4 Cards</button>
+      <div class="claim-message" *ngIf="showClaimError" [class.error]="true">
+        {{ claimErrorMessage }}
+      </div>
+      <div class="claim-message" *ngIf="showClaimSuccess" [class.success]="true">
+        Cards claimed successfully!
+      </div>
+    </div>
+
     <div class="card-grid" *ngIf="cards.length > 0">
       <div class="card-item" *ngFor="let card of cards">
         <img [src]="card.imageUrl" [alt]="card.name" class="card-image">

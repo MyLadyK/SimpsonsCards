@@ -38,13 +38,14 @@ CREATE TABLE IF NOT EXISTS user_cards (
 
 -- Insert initial cards data
 INSERT INTO cards (name, character_name, image_url, description, rarity) VALUES
-('Homer Simpson - Safety Inspector', 'Homer Simpson', 'https://example.com/homer.jpg', 'Nuclear safety inspector at Springfield Nuclear Power Plant', 'Common'),
-('Bart Simpson - Skateboarder', 'Bart Simpson', 'https://example.com/bart.jpg', 'Perpetual troublemaker and eldest son of the Simpson family', 'Common'),
-('Lisa Simpson - Saxophonist', 'Lisa Simpson', 'https://example.com/lisa.jpg', 'Gifted saxophonist and the middle child of the Simpson family', 'Rare'),
-('Marge Simpson - Mother', 'Marge Simpson', 'https://example.com/marge.jpg', 'The patient mother of the Simpson family', 'Common'),
-('Mr. Burns - Power Plant Owner', 'Mr. Burns', 'https://example.com/burns.jpg', 'Owner of the Springfield Nuclear Power Plant', 'Legendary'),
-('Ned Flanders - Neighbor', 'Ned Flanders', 'https://example.com/flanders.jpg', 'The Simpsons'' annoyingly cheerful neighbor', 'Rare'),
-('Krusty the Clown - TV Star', 'Krusty the Clown', 'https://example.com/krusty.jpg', 'Springfield''s famous TV clown', 'Rare'),
-('Apu Nahasapeemapetilon - Store Owner', 'Apu Nahasapeemapetilon', 'https://example.com/apu.jpg', 'Owner of the Kwik-E-Mart', 'Common'),
-('Moe Szyslak - Bartender', 'Moe Szyslak', 'https://example.com/moe.jpg', 'Owner of Moe''s Tavern', 'Common'),
-('Ralph Wiggum - Student', 'Ralph Wiggum', 'https://example.com/ralph.jpg', 'The innocent and simple-minded son of Chief Wiggum', 'Rare');
+('Homer Simpson - Space', 'Homer Simpson', '/assets/homer/space_homer.jpg', 'Homer in space', 'Common'),
+('Homer Simpson - No Beer No TV', 'Homer Simpson', '/assets/homer/no_beer_no_tv.jpg', 'Homer with no beer and no TV', 'Uncommon'),
+('Homer Simpson - NY Bills', 'Homer Simpson', '/assets/homer/ny_bills.jpg', 'Homer wearing NY Bills jersey', 'Rare'),
+('Bart Simpson - Naked', 'Bart Simpson', '/assets/bart/naked_bart.jpg', 'Bart without pants', 'Common'),
+('Lisa Simpson - Loser', 'Lisa Simpson', '/assets/lisa/loser_lisa.jpg', 'Lisa playing saxophone', 'Uncommon'),
+('Lisa Simpson - Cool', 'Lisa Simpson', '/assets/lisa/cool_lisa.png', 'Lisa looking cool', 'Rare'),
+('Marge Simpson - Mayor', 'Marge Simpson', '/assets/marge/mayor_marge.jpg', 'Marge as mayor', 'Common'),
+('Marge Simpson - Witch', 'Marge Simpson', '/assets/marge/witch_marge.jpg', 'Marge as a witch', 'Uncommon'),
+('Maggie Simpson - Violent', 'Maggie Simpson', '/assets/maggie/violent_maggie.jpg', 'Maggie being violent', 'Rare'),
+('Bart Simpson - Snake', 'Bart Simpson', '/assets/iconic_moments/barts_snake.jpg', 'Bart and the snake', 'Legendary'),
+('The Stonecutters', 'Iconic Moment', '/assets/iconic_moments/the_stonecutters.jpg', 'The Stonecutters reveal themselves', 'Legendary');

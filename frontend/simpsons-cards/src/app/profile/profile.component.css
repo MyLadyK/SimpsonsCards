@@ -124,3 +124,42 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+.claim-section {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.claim-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.claim-button:hover {
+  background-color: #45a049;
+}
+
+.claim-message {
+  margin-top: 10px;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.claim-message.error {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #ffcdd2;
+}
+
+.claim-message.success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}

@@ -15,6 +15,10 @@ export class CardService {
     return this.http.get<Card[]>(`${API_URL}/cards/user`);
   }
 
+  claimCards(): Observable<any> {
+    return this.http.post(`${API_URL}/claim-cards`, {});
+  }
+
   // Add more card-related methods as needed
   // getCardById(id: number): Observable<Card>
   // addCard(card: Card): Observable<Card>

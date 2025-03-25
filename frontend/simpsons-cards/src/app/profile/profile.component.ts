@@ -59,8 +59,39 @@ export class ProfileComponent implements OnInit {
     }
   }
 
+  async claimCards() {
+    try {
+      const response = await this.cardService.claimCards().toPromise();
+      
+      if (response.message === 'You can only claim cards once per day') {
+        this.showClaimError = true;
+        this.claimErrorMessage = `You can claim cards again in ${response.remainingTime} minutes`;
+        setTimeout(() => {
+          this.showClaimError = false;
+        }, 5000);
+      } else {
+        this.cards = [...this.cards, ...response.cards];
+        this.showClaimSuccess = true;
+        setTimeout(() => {
+          this.showClaimSuccess = false;
+        }, 5000);
+      }
+    } catch (error) {
+      console.error('Error claiming cards:', error);
+      this.showClaimError = true;
+      this.claimErrorMessage = 'Error claiming cards. Please try again later.';
+      setTimeout(() => {
+        this.showClaimError = false;
+      }, 5000);
+    }
+  }
+
   logout(): void {
     this.authService.logout();
     window.location.href = '/';
   }
+
+  showClaimError = false;
+  showClaimSuccess = false;
+  claimErrorMessage = '';
 }
