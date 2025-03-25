@@ -31,10 +31,13 @@ export class ProfileComponent implements OnInit {
     try {
       const token = this.authService.getToken();
       if (token) {
-        // Here you would typically make an API call to get user profile
-        // For now, we'll simulate with a basic user object
+        // Decode the JWT token to get the username
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const payload = JSON.parse(window.atob(base64));
+        
         this.user = {
-          username: 'SimpsonFan',
+          username: payload.username,
           joinDate: new Date().toISOString()
         };
       }
