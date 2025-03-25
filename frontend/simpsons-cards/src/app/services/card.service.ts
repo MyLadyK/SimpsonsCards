@@ -1,9 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { Card } from '../models/card';
 
 const API_URL = 'http://localhost:3000/api';
+
+export interface CardClaimResponse {
+  message: string;
+  remainingTime: number;
+  cards: Card[];
+}
 
 @Injectable({
   providedIn: 'root'
@@ -11,12 +17,24 @@ const API_URL = 'http://localhost:3000/api';
 export class CardService {
   constructor(private http: HttpClient) {}
 
-  getUserCards(): Observable<Card[]> {
-    return this.http.get<Card[]>(`${API_URL}/cards/user`);
+  async getUserCards(): Promise<Card[]> {
+    try {
+      const response = await firstValueFrom(this.http.get<Card[]>(`${API_URL}/cards/user`));
+      return response || [];
+    } catch (error) {
+      console.error('Error getting user cards:', error);
+      return [];
+    }
   }
 
-  claimCards(): Observable<any> {
-    return this.http.post(`${API_URL}/claim-cards`, {});
+  async claimCards(): Promise<CardClaimResponse> {
+    try {
+      const response = await firstValueFrom(this.http.post<CardClaimResponse>(`${API_URL}/cards/claim-cards`, {}));
+      return response;
+    } catch (error) {
+      console.error('Error claiming cards:', error);
+      throw error;
+    }
   }
 
   // Add more card-related methods as needed

@@ -48,12 +48,11 @@ export class ProfileComponent implements OnInit {
 
   private async loadUserCards() {
     try {
-      const cards$ = this.cardService.getUserCards();
-      cards$.subscribe(cards => {
-        this.cards = cards || [];
-      });
+      const cards = await this.cardService.getUserCards();
+      this.cards = cards || [];
     } catch (error: unknown) {
       console.error('Error loading user cards:', error);
+      this.cards = [];
     } finally {
       this.loading = false;
     }
@@ -61,16 +60,16 @@ export class ProfileComponent implements OnInit {
 
   async claimCards() {
     try {
-      const response = await this.cardService.claimCards().toPromise();
+      const response = await this.cardService.claimCards();
       
-      if (response.message === 'You can only claim cards once per day') {
+      if (response.message === 'You can only claim cards once every 8 hours') {
         this.showClaimError = true;
-        this.claimErrorMessage = `You can claim cards again in ${response.remainingTime} minutes`;
+        this.claimErrorMessage = `You can claim cards again in ${response.remainingTime} hours`;
         setTimeout(() => {
           this.showClaimError = false;
         }, 5000);
       } else {
-        this.cards = [...this.cards, ...response.cards];
+        this.cards = [...this.cards, ...(response.cards || [])];
         this.showClaimSuccess = true;
         setTimeout(() => {
           this.showClaimSuccess = false;
