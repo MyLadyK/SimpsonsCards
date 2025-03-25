@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
@@ -27,6 +27,11 @@ export class AuthService {
 
   login(credentials: LoginCredentials): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/login`, credentials);
+  }
+
+  getHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return token ? new HttpHeaders({ 'Authorization': `Bearer ${token}` }) : new HttpHeaders();
   }
 
   isLoggedIn(): boolean {

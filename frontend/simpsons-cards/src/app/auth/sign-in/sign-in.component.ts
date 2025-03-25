@@ -41,7 +41,8 @@ export class SignInComponent implements OnInit {
 
       this.authService.login(credentials).subscribe({
         next: (response) => {
-          this.router.navigate(['/']);
+          localStorage.setItem('token', response.token);
+          this.router.navigate(['/profile']);
         },
         error: (error) => {
           this.errorMessage = error.error.message || 'Login failed';

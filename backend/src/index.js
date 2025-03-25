@@ -9,8 +9,13 @@ const cardRoutes = require('./routes/cards');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// CORS configuration
+app.use(cors({
+  origin: 'http://localhost:4200',
+  credentials: true
+}));
+
 // Middleware
-app.use(cors());
 app.use(express.json());
 
 // Serve static assets in production

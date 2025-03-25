@@ -1,0 +1,39 @@
+<div class="profile-container" *ngIf="!loading">
+  <div class="profile-header">
+    <h1>{{ user?.username }}</h1>
+    <button class="logout-btn" (click)="logout()">Logout</button>
+  </div>
+
+  <div class="profile-info">
+    <div class="info-section">
+      <h2>Profile Information</h2>
+      <p><strong>Username:</strong> {{ user?.username }}</p>
+      <p><strong>Member since:</strong> {{ user?.joinDate | date }}</p>
+    </div>
+
+    <div class="info-section">
+      <h2>My Collection</h2>
+      <p><strong>Total Cards:</strong> {{ cards.length }}</p>
+    </div>
+  </div>
+
+  <div class="cards-grid" *ngIf="cards.length > 0">
+    <div class="card-item" *ngFor="let card of cards">
+      <img [src]="card.imageUrl" [alt]="card.name" class="card-image">
+      <div class="card-info">
+        <h3>{{ card.name }}</h3>
+        <p><strong>Series:</strong> {{ card.series }}</p>
+        <p><strong>Rarity:</strong> {{ card.rarity }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty-collection" *ngIf="cards.length === 0">
+    <p>Your collection is empty. Start collecting cards!</p>
+  </div>
+</div>
+
+<div class="loading-spinner" *ngIf="loading">
+  <div class="spinner"></div>
+  <p>Loading your profile...</p>
+</div>
