@@ -24,8 +24,11 @@ export class AuthService {
     return this.http.post(`${API_URL}/auth/login`, { username, password }).pipe(
       tap((response: any) => {
         if (response.token) {
+          console.log('Login successful, storing token:', response.token);
           localStorage.setItem('token', response.token);
           this.isAuthenticatedSubject.next(true);
+        } else {
+          console.error('Login response missing token:', response);
         }
       })
     );
@@ -41,6 +44,8 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    console.log('Getting token:', token);
+    return token;
   }
 }
