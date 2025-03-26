@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, firstValueFrom } from 'rxjs';
 import { Card } from '../models/card';
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'http://localhost:3000';
 
 export interface CardClaimResponse {
   message: string;
@@ -29,7 +29,7 @@ export class CardService {
 
   async claimCards(): Promise<CardClaimResponse> {
     try {
-      const response = await firstValueFrom(this.http.post<CardClaimResponse>(`${API_URL}/cards/claim-cards`, {}));
+      const response = await firstValueFrom(this.http.post<CardClaimResponse>(`${API_URL}/cards/claim`, {}));
       return response;
     } catch (error) {
       console.error('Error claiming cards:', error);

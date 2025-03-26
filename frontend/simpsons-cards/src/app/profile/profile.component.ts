@@ -18,48 +18,49 @@ export class ProfileComponent implements OnInit {
   user: any | null = null;
   cards: Card[] = [];
   loading = true;
+  showClaimError = false;
+  showClaimSuccess = false;
+  claimErrorMessage = '';
 
   private authService = inject(AuthService);
   private cardService = inject(CardService);
 
   ngOnInit(): void {
-    this.loadUserProfile();
-    this.loadUserCards();
+    this.loadUserProfile().finally(() => {
+      this.loading = false;
+    });
   }
 
   private async loadUserProfile() {
     try {
       const token = this.authService.getToken();
-      if (token) {
-        // Decode the JWT token to get the username
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const payload = JSON.parse(window.atob(base64));
-        
-        this.user = {
-          username: payload.username,
-          joinDate: new Date().toISOString()
-        };
+      if (!token) {
+        throw new Error('No token found');
       }
+
+      // Decodificar el JWT token para obtener el username
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const payload = JSON.parse(window.atob(base64));
+
+      // Verificar si el payload contiene el username
+      if (!payload.username) {
+        throw new Error('Username not found in token');
+      }
+
+      this.user = {
+        username: payload.username,
+        joinDate: new Date().toISOString()
+      };
     } catch (error: unknown) {
       console.error('Error loading user profile:', error);
-    }
-  }
-
-  private async loadUserCards() {
-    try {
-      const cards = await this.cardService.getUserCards();
-      this.cards = cards || [];
-    } catch (error: unknown) {
-      console.error('Error loading user cards:', error);
-      this.cards = [];
-    } finally {
-      this.loading = false;
+      this.user = null;
     }
   }
 
   async claimCards() {
     try {
+      // Primero intentamos reclamar nuevas cartas
       const response = await this.cardService.claimCards();
       
       if (response.message === 'You can only claim cards once every 8 hours') {
@@ -69,7 +70,9 @@ export class ProfileComponent implements OnInit {
           this.showClaimError = false;
         }, 5000);
       } else {
-        this.cards = [...this.cards, ...(response.cards || [])];
+        // Si el reclamo fue exitoso, obtenemos las cartas actualizadas
+        const cards = await this.cardService.getUserCards();
+        this.cards = cards || [];
         this.showClaimSuccess = true;
         setTimeout(() => {
           this.showClaimSuccess = false;
@@ -89,8 +92,4 @@ export class ProfileComponent implements OnInit {
     this.authService.logout();
     window.location.href = '/';
   }
-
-  showClaimError = false;
-  showClaimSuccess = false;
-  claimErrorMessage = '';
 }
