@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const db = require('./config/db');
+const db = require('./src/config/db');
 
 const app = express();
 
@@ -12,8 +12,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.use('/auth', require('./routes/auth'));
-app.use('/cards', require('./routes/cards'));
+app.use('/auth', require('./src/routes/auth'));
+app.use('/cards', require('./src/routes/cards'));
 
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {

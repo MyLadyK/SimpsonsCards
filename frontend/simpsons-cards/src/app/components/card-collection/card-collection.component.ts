@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { CardsService } from '../../services/cards.service';
+import { CardService } from '../../services/card.service';
 
 @Component({
   selector: 'app-card-collection',
@@ -15,7 +15,7 @@ export class CardCollectionComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private cardsService: CardsService
+    private cardService: CardService
   ) {}
 
   ngOnInit(): void {
@@ -30,7 +30,7 @@ export class CardCollectionComponent implements OnInit {
   async loadCards() {
     this.isLoading = true;
     try {
-      this.cards = await this.cardsService.getCards().toPromise();
+      this.cards = await this.cardService.getUserCards();
     } catch (error) {
       console.error('Error loading cards:', error);
     } finally {

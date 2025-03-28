@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { CardsService } from '../../services/cards.service';
+import { CardService } from '../../services/card.service';
 
 @Component({
   selector: 'app-card-draw',
@@ -17,7 +17,7 @@ export class CardDrawComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private cardsService: CardsService
+    private cardService: CardService
   ) {}
 
   ngOnInit(): void {
@@ -35,9 +35,9 @@ export class CardDrawComponent implements OnInit {
 
     this.isLoading = true;
     try {
-      const response = await this.cardsService.drawCards().toPromise();
+      const response = await this.cardService.claimCards();
       this.cards = response.cards;
-      this.remainingDraws = response.remainingDraws;
+      this.remainingDraws = 4; // Reset to 4 draws after successful claim
     } catch (error) {
       console.error('Error drawing cards:', error);
     } finally {
@@ -47,20 +47,16 @@ export class CardDrawComponent implements OnInit {
 
   private async getCards() {
     try {
-      this.cards = await this.cardsService.getCards().toPromise();
+      this.cards = await this.cardService.getUserCards();
     } catch (error) {
-      console.error('Error fetching cards:', error);
+      console.error('Error getting cards:', error);
     }
   }
 
   private async getDrawStatus() {
-    try {
-      const status = await this.cardsService.getDrawStatus().toPromise();
-      this.remainingDraws = status.remainingDraws;
-      this.nextDrawTime = status.nextDrawTime;
-    } catch (error) {
-      console.error('Error fetching draw status:', error);
-    }
+    // This method can be implemented to get the remaining draws from the backend
+    // For now, we'll just set it to 4
+    this.remainingDraws = 4;
   }
 
   logout() {

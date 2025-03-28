@@ -29,7 +29,7 @@ export class CardService {
 
   async claimCards(): Promise<CardClaimResponse> {
     try {
-      const response = await firstValueFrom(this.http.post<CardClaimResponse>(`${API_URL}/cards/claim`, {}));
+      const response = await firstValueFrom(this.http.post<CardClaimResponse>(`${API_URL}/cards/claim-cards`, {}));
       return response;
     } catch (error) {
       console.error('Error claiming cards:', error);

@@ -50,7 +50,7 @@ router.post('/claim-cards', checkAuth, async (req, res) => {
     const user = users[0];
     const now = new Date();
 
-    // Check if user can claim cards (8 hours interval)
+    // Check if user can claim cards
     if (user.last_cards_drawn && now < new Date(user.last_cards_drawn.getTime() + 8 * 60 * 60 * 1000)) {
       const remainingTime = Math.ceil((8 * 60 * 60 - (now.getTime() - user.last_cards_drawn.getTime()) / 1000) / 60);
       return res.status(429).json({ 
@@ -59,50 +59,33 @@ router.post('/claim-cards', checkAuth, async (req, res) => {
       });
     }
 
-    // Get all available cards
-    const [allCards] = await db.query('SELECT * FROM cards');
-    
-    // Get cards the user already has
-    const [userCards] = await db.query(
-      'SELECT card_id FROM user_cards WHERE user_id = ?',
-      [req.user.id]
+    // Randomly select 4 cards
+    const [availableCards] = await db.query(
+      `SELECT id, name, character_name, image, description, rarity 
+       FROM cards 
+       ORDER BY RAND() 
+       LIMIT 4`
     );
 
-    // Filter out cards the user already has
-    const availableCards = allCards.filter(card => 
-      !userCards.some(userCard => userCard.card_id === card.id)
+    // Update user's last_cards_drawn timestamp
+    await db.query(
+      'UPDATE users SET last_cards_drawn = ? WHERE id = ?',
+      [now, req.user.id]
     );
 
-    // Select 4 random cards from available cards
-    const selectedCards = [];
-    for (let i = 0; i < 4 && availableCards.length > 0; i++) {
-      const randomIndex = Math.floor(Math.random() * availableCards.length);
-      selectedCards.push(availableCards[randomIndex]);
-      availableCards.splice(randomIndex, 1);
-    }
-
-    // If no cards available
-    if (selectedCards.length === 0) {
-      return res.status(400).json({ message: 'No more cards available to claim' });
-    }
-
-    // Insert new cards into user_cards table
-    const insertPromises = selectedCards.map(card =>
-      db.query('INSERT INTO user_cards (user_id, card_id) VALUES (?, ?)', [req.user.id, card.id])
+    // Add cards to user's collection
+    const insertPromises = availableCards.map(card =>
+      db.query(
+        'INSERT INTO user_cards (user_id, card_id, obtained_at) VALUES (?, ?, NOW())',
+        [req.user.id, card.id]
+      )
     );
 
     await Promise.all(insertPromises);
 
-    // Update user's last_cards_drawn timestamp
-    await db.query(
-      'UPDATE users SET last_cards_drawn = ?, cards_remaining_today = 4 WHERE id = ?',
-      [now, req.user.id]
-    );
-
-    // Return the selected cards
     res.json({
-      cards: selectedCards,
-      message: 'Cards claimed successfully'
+      message: 'Cards claimed successfully',
+      cards: availableCards
     });
 
   } catch (error) {
