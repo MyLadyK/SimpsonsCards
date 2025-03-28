@@ -32,8 +32,8 @@ export const authInterceptor = (req: HttpRequest<unknown>, next: HttpHandlerFn):
     });
   }
   
-  // Only add token to requests that need authentication
-  if (token && !req.url.includes('/auth/login')) {
+  // Añadir token a todas las peticiones que requieren autenticación
+  if (token && !req.url.includes('/auth/login') && !req.url.includes('/auth/register')) {
     const authReq = req.clone({
       setHeaders: {
         'Authorization': `Bearer ${token}`  

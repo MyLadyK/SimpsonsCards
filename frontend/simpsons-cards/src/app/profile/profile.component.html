@@ -1,7 +1,6 @@
 <div class="profile-container" *ngIf="!loading">
   <div class="profile-header">
     <h2>{{ user?.username }}</h2>
-    <p>Joined: {{ user?.joinDate | date }}</p>
     <button class="logout-btn" (click)="logout()">Logout</button>
   </div>
 
@@ -12,7 +11,7 @@
     </div>
 
     <div class="claim-section">
-      <button (click)="claimCards()" class="claim-button">Claim 4 Cards</button>
+      <button (click)="claimCards()" class="claim-button" [disabled]="loading">Claim 4 Cards</button>
       <div class="claim-message" *ngIf="showClaimError" [class.error]="true">
         {{ claimErrorMessage }}
       </div>
@@ -35,10 +34,10 @@
     <div class="empty-collection" *ngIf="cards.length === 0">
       <p>Your collection is empty. Start collecting cards!</p>
     </div>
+  </div>
 
-    <div class="loading" *ngIf="loading">
-      <p>Loading cards...</p>
-    </div>
+  <div class="loading" *ngIf="loading">
+    <p>Loading cards...</p>
   </div>
 </div>
 

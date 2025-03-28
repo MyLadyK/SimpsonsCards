@@ -36,23 +36,35 @@ export class ProfileComponent implements OnInit {
         throw new Error('No token found');
       }
 
-      // Decodificar el JWT token para obtener el username
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const payload = JSON.parse(window.atob(base64));
-
-      console.log('Decoded token payload:', payload);
+      // Verificar si el token es válido
+      if (!this.authService.isTokenValid()) {
+        throw new Error('Token expired');
+      }
 
       // Intentamos obtener la información del usuario desde el backend
       const user = await this.authService.getUserInfo().toPromise();
       if (user && user.username) {
-        this.user = user;
+        this.user = {
+          username: user.username
+        };
       } else {
-        throw new Error('Username not found in token or backend');
+        // Si no obtenemos datos del backend, usamos el payload del token
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const payload = JSON.parse(window.atob(base64));
+        this.user = {
+          username: payload.username
+        };
       }
-    } catch (error: unknown) {
+
+      // Cargar las cartas del usuario
+      this.cards = await this.cardService.getUserCards();
+    } catch (error) {
       console.error('Error loading user profile:', error);
-      this.user = null;
+      this.user = {
+        username: 'Usuario no disponible'
+      };
+      this.cards = [];
     } finally {
       this.loading = false;
     }
@@ -60,31 +72,39 @@ export class ProfileComponent implements OnInit {
 
   async claimCards() {
     try {
-      // Primero intentamos reclamar nuevas cartas
+      this.showClaimError = false;
+      this.showClaimSuccess = false;
+      this.loading = true;
+
       const response = await this.cardService.claimCards();
       
-      if (response.message === 'You can only claim cards once every 8 hours') {
-        this.showClaimError = true;
-        this.claimErrorMessage = `You can claim cards again in ${response.remainingTime} hours`;
-        setTimeout(() => {
-          this.showClaimError = false;
-        }, 5000);
-      } else {
-        // Si el reclamo fue exitoso, obtenemos las cartas actualizadas
-        const cards = await this.cardService.getUserCards();
-        this.cards = cards || [];
-        this.showClaimSuccess = true;
-        setTimeout(() => {
-          this.showClaimSuccess = false;
-        }, 5000);
+      if (response.message) {
+        if (response.remainingTime) {
+          this.showClaimError = true;
+          this.claimErrorMessage = `${response.message} (${response.remainingTime} minutos restantes)`;
+        } else {
+          this.showClaimSuccess = true;
+          this.cards = response.cards;
+        }
       }
     } catch (error) {
       console.error('Error claiming cards:', error);
       this.showClaimError = true;
-      this.claimErrorMessage = 'Error claiming cards. Please try again later.';
-      setTimeout(() => {
-        this.showClaimError = false;
-      }, 5000);
+      this.claimErrorMessage = 'Error al reclamar cartas. Por favor, inténtalo de nuevo.';
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  async refreshCards() {
+    try {
+      this.loading = true;
+      this.cards = await this.cardService.getUserCards();
+    } catch (error) {
+      console.error('Error refreshing cards:', error);
+      this.cards = [];
+    } finally {
+      this.loading = false;
     }
   }
 

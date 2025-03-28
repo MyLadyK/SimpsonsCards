@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom, catchError, of } from 'rxjs';
 import { Card } from '../models/card';
-
-const API_URL = 'http://localhost:3000';
+import { environment } from '../../environments/environment';
 
 export interface CardClaimResponse {
   message: string;
@@ -19,7 +18,7 @@ export class CardService {
 
   async getUserCards(): Promise<Card[]> {
     try {
-      const response = await firstValueFrom(this.http.get<Card[]>(`${API_URL}/cards/user`));
+      const response = await firstValueFrom(this.http.get<Card[]>(`${environment.apiUrl}/cards/user`));
       return response || [];
     } catch (error) {
       console.error('Error getting user cards:', error);
@@ -29,17 +28,62 @@ export class CardService {
 
   async claimCards(): Promise<CardClaimResponse> {
     try {
-      const response = await firstValueFrom(this.http.post<CardClaimResponse>(`${API_URL}/cards/claim-cards`, {}));
+      const response = await firstValueFrom(
+        this.http.post<CardClaimResponse>(`${environment.apiUrl}/cards/claim-cards`, {})
+      );
       return response;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error claiming cards:', error);
+      
+      if (error.status === 429) {
+        return {
+          message: error.error.message,
+          remainingTime: error.error.remainingTime,
+          cards: []
+        };
+      }
+
       throw error;
     }
   }
 
   // Add more card-related methods as needed
-  // getCardById(id: number): Observable<Card>
-  // addCard(card: Card): Observable<Card>
-  // updateCard(card: Card): Observable<Card>
-  // deleteCard(id: number): Observable<void>
+  async getCardById(id: number): Promise<Card | null> {
+    try {
+      const response = await firstValueFrom(this.http.get<Card>(`${environment.apiUrl}/cards/${id}`));
+      return response || null;
+    } catch (error) {
+      console.error('Error getting card:', error);
+      return null;
+    }
+  }
+
+  async addCard(card: Card): Promise<Card> {
+    try {
+      const response = await firstValueFrom(this.http.post<Card>(`${environment.apiUrl}/cards`, card));
+      return response;
+    } catch (error) {
+      console.error('Error adding card:', error);
+      throw error;
+    }
+  }
+
+  async updateCard(card: Card): Promise<Card> {
+    try {
+      const response = await firstValueFrom(this.http.put<Card>(`${environment.apiUrl}/cards/${card.id}`, card));
+      return response;
+    } catch (error) {
+      console.error('Error updating card:', error);
+      throw error;
+    }
+  }
+
+  async deleteCard(id: number): Promise<void> {
+    try {
+      await firstValueFrom(this.http.delete(`${environment.apiUrl}/cards/${id}`));
+    } catch (error) {
+      console.error('Error deleting card:', error);
+      throw error;
+    }
+  }
 }
