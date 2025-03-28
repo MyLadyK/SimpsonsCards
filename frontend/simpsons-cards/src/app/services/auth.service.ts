@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'http://localhost:3000';
 
 @Injectable({
   providedIn: 'root'
@@ -47,5 +47,20 @@ export class AuthService {
     const token = localStorage.getItem('token');
     console.log('Getting token:', token);
     return token;
+  }
+
+  getUserInfo(): Observable<any> {
+    const token = this.getToken();
+    if (!token) {
+      return new Observable(subscriber => {
+        subscriber.error('No token found');
+      });
+    }
+
+    return this.http.get(`${API_URL}/auth/user`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
   }
 }

@@ -5,19 +5,38 @@ import { Observable } from 'rxjs';
 export const authInterceptor = (req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> => {
   const token = localStorage.getItem('token');
   
-  console.log('Auth interceptor:', { 
-    hasToken: !!token, 
-    url: req.url,
-    method: req.method,
-    headers: req.headers.keys(),
-    token: token ? 'TOKEN_PRESENT' : 'NO_TOKEN'
-  });
+  if (token) {
+    try {
+      // Decodificar el token para ver su contenido
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const payload = JSON.parse(window.atob(base64));
+      
+      console.log('Auth interceptor - Token Payload:', {
+        hasToken: true,
+        url: req.url,
+        method: req.method,
+        payload: payload,
+        tokenPresent: 'TOKEN_PRESENT'
+      });
+    } catch (error) {
+      console.error('Error decoding token:', error);
+    }
+  } else {
+    console.log('Auth interceptor:', { 
+      hasToken: false, 
+      url: req.url,
+      method: req.method,
+      headers: req.headers.keys(),
+      token: 'NO_TOKEN'
+    });
+  }
   
   // Only add token to requests that need authentication
   if (token && !req.url.includes('/auth/login')) {
     const authReq = req.clone({
       setHeaders: {
-        'authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`  
       }
     });
     console.log('Request with token:', { 
@@ -27,6 +46,6 @@ export const authInterceptor = (req: HttpRequest<unknown>, next: HttpHandlerFn):
     });
     return next(authReq);
   }
-
+  
   return next(req);
 };

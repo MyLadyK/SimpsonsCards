@@ -26,9 +26,7 @@ export class ProfileComponent implements OnInit {
   private cardService = inject(CardService);
 
   ngOnInit(): void {
-    this.loadUserProfile().finally(() => {
-      this.loading = false;
-    });
+    this.loadUserProfile();
   }
 
   private async loadUserProfile() {
@@ -43,18 +41,20 @@ export class ProfileComponent implements OnInit {
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
       const payload = JSON.parse(window.atob(base64));
 
-      // Verificar si el payload contiene el username
-      if (!payload.username) {
-        throw new Error('Username not found in token');
-      }
+      console.log('Decoded token payload:', payload);
 
-      this.user = {
-        username: payload.username,
-        joinDate: new Date().toISOString()
-      };
+      // Intentamos obtener la información del usuario desde el backend
+      const user = await this.authService.getUserInfo().toPromise();
+      if (user && user.username) {
+        this.user = user;
+      } else {
+        throw new Error('Username not found in token or backend');
+      }
     } catch (error: unknown) {
       console.error('Error loading user profile:', error);
       this.user = null;
+    } finally {
+      this.loading = false;
     }
   }
 
