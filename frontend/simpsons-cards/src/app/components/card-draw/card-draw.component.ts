@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CardService } from '../../services/card.service';
@@ -6,7 +8,9 @@ import { CardService } from '../../services/card.service';
 @Component({
   selector: 'app-card-draw',
   templateUrl: './card-draw.component.html',
-  styleUrls: ['./card-draw.component.css']
+  styleUrls: ['./card-draw.component.css'],
+  imports: [CommonModule, RouterModule],
+  standalone: true
 })
 export class CardDrawComponent implements OnInit {
   cards: any[] = [];
@@ -54,9 +58,14 @@ export class CardDrawComponent implements OnInit {
   }
 
   private async getDrawStatus() {
-    // This method can be implemented to get the remaining draws from the backend
-    // For now, we'll just set it to 4
-    this.remainingDraws = 4;
+    try {
+      // Aquí deberías implementar la lógica para obtener el estado de los draws
+      // Por ahora, asumimos que siempre hay draws disponibles
+      this.remainingDraws = 4;
+      this.nextDrawTime = null;
+    } catch (error) {
+      console.error('Error getting draw status:', error);
+    }
   }
 
   logout() {

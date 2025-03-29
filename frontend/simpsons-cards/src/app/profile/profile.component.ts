@@ -56,9 +56,6 @@ export class ProfileComponent implements OnInit {
           username: payload.username
         };
       }
-
-      // Cargar las cartas del usuario
-      this.cards = await this.cardService.getUserCards();
     } catch (error) {
       console.error('Error loading user profile:', error);
       this.user = {
@@ -79,9 +76,9 @@ export class ProfileComponent implements OnInit {
       const response = await this.cardService.claimCards();
       
       if (response.message) {
-        if (response.remainingTime) {
+        if (response.message === 'No available cards to claim') {
           this.showClaimError = true;
-          this.claimErrorMessage = `${response.message} (${response.remainingTime} minutos restantes)`;
+          this.claimErrorMessage = 'No hay cartas disponibles para reclamar';
         } else {
           this.showClaimSuccess = true;
           this.cards = response.cards;
@@ -108,8 +105,8 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  logout(): void {
+  logout() {
     this.authService.logout();
-    window.location.href = '/';
+    window.location.href = '/sign-in';
   }
 }

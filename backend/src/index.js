@@ -28,8 +28,8 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/cards', cardRoutes);
+app.use('/auth', authRoutes);
+app.use('/cards', cardRoutes);
 
 // Basic route for testing
 app.get('/', (req, res) => {

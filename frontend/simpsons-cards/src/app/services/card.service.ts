@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, firstValueFrom, catchError, of } from 'rxjs';
-import { Card } from '../models/card';
 import { environment } from '../../environments/environment';
+import { Card } from '../models/card';
 
 export interface CardClaimResponse {
   message: string;
