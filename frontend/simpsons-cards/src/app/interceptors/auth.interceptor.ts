@@ -1,51 +1,53 @@
 import { Injectable } from '@angular/core';
 import { HttpRequest, HttpHandlerFn, HttpEvent } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 export const authInterceptor = (req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> => {
+  console.log('[AuthInterceptor] Interceptor ejecutado para URL:', req.url);
+
   const token = localStorage.getItem('token');
-  
-  if (token) {
-    try {
-      // Decodificar el token para ver su contenido
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const payload = JSON.parse(window.atob(base64));
-      
-      console.log('Auth interceptor - Token Payload:', {
-        hasToken: true,
-        url: req.url,
-        method: req.method,
-        payload: payload,
-        tokenPresent: 'TOKEN_PRESENT'
-      });
-    } catch (error) {
-      console.error('Error decoding token:', error);
-    }
-  } else {
-    console.log('Auth interceptor:', { 
-      hasToken: false, 
-      url: req.url,
-      method: req.method,
-      headers: req.headers.keys(),
-      token: 'NO_TOKEN'
-    });
+  console.log('[AuthInterceptor] Token en localStorage:', token);
+
+  // Excluir rutas públicas (si aplica)
+  if (req.url.includes('/auth/login') || req.url.includes('/auth/register')) {
+    console.log('[AuthInterceptor] Ruta pública detectada, sin token:', req.url);
+    return next(req);
   }
-  
-  // Añadir token a todas las peticiones que requieren autenticación
-  if (token && !req.url.includes('/auth/login') && !req.url.includes('/auth/register')) {
-    const authReq = req.clone({
-      setHeaders: {
-        'Authorization': `Bearer ${token}`  
+
+  if (token) {
+    // Crear nuevas headers con el token
+    const headers = req.headers.set('Authorization', `Bearer ${token}`);
+    const authReq = req.clone({ headers });
+
+    console.log('[AuthInterceptor] Headers antes de enviar:', {
+      url: authReq.url,
+      method: authReq.method,
+      headers: {
+        all: authReq.headers.keys(),
+        auth: authReq.headers.get('Authorization')
       }
     });
-    console.log('Request with token:', { 
-      url: authReq.url,
-      headers: authReq.headers.keys(),
-      token: 'TOKEN_ADDED'
-    });
-    return next(authReq);
+
+    return next(authReq).pipe(
+      catchError(error => {
+        console.error('[AuthInterceptor] Error en la petición interceptada:', {
+          error,
+          request: {
+            url: authReq.url,
+            method: authReq.method,
+            headers: {
+              all: authReq.headers.keys(),
+              auth: authReq.headers.get('Authorization')
+            }
+          }
+        });
+        return throwError(() => error);
+      })
+    );
+  } else {
+    console.log('[AuthInterceptor] Sin token en localStorage. URL:', req.url);
   }
-  
+
   return next(req);
 };
