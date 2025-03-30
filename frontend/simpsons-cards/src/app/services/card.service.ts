@@ -23,7 +23,9 @@ export class CardService {
       console.log('CardService - Token para getUserCards:', token);
       
       const response = await firstValueFrom(
-        this.http.get<Card[]>(`${environment.apiUrl}/cards/user`).pipe(
+        this.http.get<Card[]>(`${environment.apiUrl}/cards/user`, {
+          headers: { Authorization: `Bearer ${token}` }
+        }).pipe(
           catchError((error) => {
             console.error('CardService - Error getting user cards:', error);
             return of([]);
@@ -43,31 +45,32 @@ export class CardService {
       console.log('CardService - Token para claimCards:', token);
       
       const response = await firstValueFrom(
-        this.http.post<CardClaimResponse>(`${environment.apiUrl}/cards/claim-cards`, {}).pipe(
+        this.http.post<CardClaimResponse>(
+          `${environment.apiUrl}/cards/claim-cards`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        ).pipe(
           catchError((error: any) => {
             console.error('CardService - Error claiming cards:', error);
             
             if (error.status === 429) {
               return of({
-                message: error.error.message,
-                remainingTime: error.error.remainingTime,
+                message: 'Too many requests. Please wait and try again.',
+                remainingTime: error.error.remainingTime || 0,
                 cards: []
               });
             }
-
-            if (error.status === 401) {
-              console.error('CardService - Unauthorized error:', error);
-              return of({
-                message: 'No autorizado para reclamar cartas',
-                remainingTime: 0,
-                cards: []
-              });
-            }
-
-            throw error;
+            
+            return of({
+              message: error.error?.message || 'Error claiming cards',
+              remainingTime: 0,
+              cards: []
+            });
           })
         )
       );
+      
+      console.log('CardService - Response from claimCards:', response);
       return response;
     } catch (error) {
       console.error('CardService - Error in claimCards:', error);
@@ -78,8 +81,13 @@ export class CardService {
   // Add more card-related methods as needed
   async getCardById(id: number): Promise<Card | null> {
     try {
+      const token = this.authService.getToken();
+      console.log('CardService - Token para getCardById:', token);
+      
       const response = await firstValueFrom(
-        this.http.get<Card>(`${environment.apiUrl}/cards/${id}`).pipe(
+        this.http.get<Card>(`${environment.apiUrl}/cards/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        }).pipe(
           catchError((error) => {
             console.error('CardService - Error getting card:', error);
             return of(null);
@@ -95,8 +103,13 @@ export class CardService {
 
   async addCard(card: Card): Promise<Card> {
     try {
+      const token = this.authService.getToken();
+      console.log('CardService - Token para addCard:', token);
+      
       const response = await firstValueFrom(
-        this.http.post<Card>(`${environment.apiUrl}/cards`, card).pipe(
+        this.http.post<Card>(`${environment.apiUrl}/cards`, card, {
+          headers: { Authorization: `Bearer ${token}` }
+        }).pipe(
           catchError((error) => {
             console.error('CardService - Error adding card:', error);
             throw error;
@@ -112,8 +125,13 @@ export class CardService {
 
   async updateCard(card: Card): Promise<Card> {
     try {
+      const token = this.authService.getToken();
+      console.log('CardService - Token para updateCard:', token);
+      
       const response = await firstValueFrom(
-        this.http.put<Card>(`${environment.apiUrl}/cards/${card.id}`, card).pipe(
+        this.http.put<Card>(`${environment.apiUrl}/cards/${card.id}`, card, {
+          headers: { Authorization: `Bearer ${token}` }
+        }).pipe(
           catchError((error) => {
             console.error('CardService - Error updating card:', error);
             throw error;
@@ -129,8 +147,13 @@ export class CardService {
 
   async deleteCard(id: number): Promise<void> {
     try {
+      const token = this.authService.getToken();
+      console.log('CardService - Token para deleteCard:', token);
+      
       await firstValueFrom(
-        this.http.delete(`${environment.apiUrl}/cards/${id}`).pipe(
+        this.http.delete(`${environment.apiUrl}/cards/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        }).pipe(
           catchError((error) => {
             console.error('CardService - Error deleting card:', error);
             throw error;
