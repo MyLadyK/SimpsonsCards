@@ -22,6 +22,16 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Servir archivos estáticos
+app.use('/assets', express.static(path.join(__dirname, '../frontend/simpsons-cards/src/assets')));
+
+// Middleware para manejar rutas de assets
+app.get('/assets/*', (req, res) => {
+  const filePath = path.join(__dirname, '../frontend/simpsons-cards/src/assets', req.params[0]);
+  console.log('Serving asset:', filePath);
+  res.sendFile(filePath);
+});
+
 // Routes
 app.use('/auth', require('./routes/auth'));
 app.use('/cards', require('./routes/cards'));
