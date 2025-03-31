@@ -22,7 +22,7 @@
 
     <div class="card-grid" *ngIf="cards.length > 0">
       <div class="card-item" *ngFor="let card of cards">
-        <img [src]="card.imageUrl" [alt]="card.name" class="card-image">
+        <img [src]="card.image_url" [alt]="card.name" class="card-image">
         <div class="card-info">
           <h4>{{ card.name }}</h4>
           <p><strong>Series:</strong> {{ card.series }}</p>

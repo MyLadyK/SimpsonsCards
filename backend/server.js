@@ -23,13 +23,22 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Servir archivos estáticos
-app.use('/assets', express.static(path.join(__dirname, '../frontend/simpsons-cards/src/assets')));
+app.use('/assets', express.static(path.join(__dirname, 'public')));
 
 // Middleware para manejar rutas de assets
 app.get('/assets/*', (req, res) => {
-  const filePath = path.join(__dirname, '../frontend/simpsons-cards/src/assets', req.params[0]);
+  const filePath = path.join(__dirname, 'public', req.params[0]);
   console.log('Serving asset:', filePath);
   res.sendFile(filePath);
+});
+
+// Aplicar el middleware de autenticación a todas las rutas EXCEPTO /assets/*
+const auth = require('./middleware/auth');
+app.use((req, res, next) => {
+  if (req.path.startsWith('/assets/')) {
+    return next();
+  }
+  auth(req, res, next);
 });
 
 // Routes
