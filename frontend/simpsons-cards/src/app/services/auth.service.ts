@@ -24,7 +24,7 @@ export class AuthService {
       tap((response: any) => {
         if (response.token) {
           console.log('Login successful, storing token:', response.token);
-          localStorage.setItem('token', response.token);
+          this.setToken(response.token);
           this.isAuthenticatedSubject.next(true);
         } else {
           console.error('Login response missing token:', response);
@@ -44,7 +44,7 @@ export class AuthService {
       tap((response: any) => {
         if (response.token) {
           console.log('Registration successful, storing token:', response.token);
-          localStorage.setItem('token', response.token);
+          this.setToken(response.token);
           this.isAuthenticatedSubject.next(true);
         }
       }),
@@ -55,15 +55,48 @@ export class AuthService {
     );
   }
 
-  logout() {
-    localStorage.removeItem('token');
-    this.isAuthenticatedSubject.next(false);
+  private getTokenFromStorage(): string | null {
+    return localStorage.getItem('token');
+  }
+
+  private setToken(token: string) {
+    localStorage.setItem('token', token);
   }
 
   getToken(): string | null {
-    const token = localStorage.getItem('token');
-    console.log('Getting token:', token);
-    return token;
+    return this.getTokenFromStorage();
+  }
+
+  isTokenValid(): boolean {
+    const token = this.getToken();
+    if (!token) return false;
+    
+    try {
+      const decodedToken = this.decodeToken();
+      const expirationTime = decodedToken.exp * 1000;
+      return Date.now() < expirationTime;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  decodeToken(): any {
+    const token = this.getToken();
+    if (!token) return null;
+    
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(window.atob(base64));
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return null;
+    }
+  }
+
+  logout() {
+    localStorage.removeItem('token');
+    this.isAuthenticatedSubject.next(false);
   }
 
   getUserInfo(): Observable<any> {
@@ -78,21 +111,5 @@ export class AuthService {
         return of(null);
       })
     );
-  }
-
-  isTokenValid(): boolean {
-    const token = this.getToken();
-    if (!token) return false;
-
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const payload = JSON.parse(window.atob(base64));
-      const currentTime = Math.floor(Date.now() / 1000);
-      return payload.exp > currentTime;
-    } catch (error) {
-      console.error('Error validating token:', error);
-      return false;
-    }
   }
 }

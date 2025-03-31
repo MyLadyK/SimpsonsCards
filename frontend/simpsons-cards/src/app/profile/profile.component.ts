@@ -49,21 +49,30 @@ export class ProfileComponent implements OnInit {
         };
       } else {
         // Si no obtenemos datos del backend, usamos el payload del token
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const payload = JSON.parse(window.atob(base64));
+        const decodedToken = this.authService.decodeToken();
         this.user = {
-          username: payload.username
+          username: decodedToken.username
         };
       }
+
+      // Cargar las cartas del usuario
+      await this.loadUserCards();
+
     } catch (error) {
-      console.error('Error loading user profile:', error);
-      this.user = {
-        username: 'Usuario no disponible'
-      };
-      this.cards = [];
+      console.error('Error loading profile:', error);
+      // Manejar el error según sea necesario
     } finally {
       this.loading = false;
+    }
+  }
+
+  private async loadUserCards() {
+    try {
+      this.cards = await this.cardService.getUserCards();
+      console.log('Cards loaded:', this.cards);
+    } catch (error) {
+      console.error('Error loading user cards:', error);
+      this.cards = [];
     }
   }
 
