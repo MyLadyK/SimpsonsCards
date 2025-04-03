@@ -49,7 +49,7 @@ export class ProfileComponent implements OnInit {
         };
       } else {
         // Si no obtenemos datos del backend, usamos el payload del token
-        const decodedToken = this.authService.decodeToken();
+        const decodedToken = this.authService.getUser();
         this.user = {
           username: decodedToken.username
         };

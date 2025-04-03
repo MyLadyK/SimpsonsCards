@@ -16,5 +16,14 @@
     "headers": {
       "Connection": "keep-alive"
     }
+  },
+  "/admin/*": {
+    "target": "http://localhost:3000",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "headers": {
+      "Connection": "keep-alive"
+    }
   }
 }

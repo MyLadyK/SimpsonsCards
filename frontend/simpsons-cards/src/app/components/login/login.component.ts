@@ -29,22 +29,53 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.authService.getToken()) {
-      this.router.navigate(['/profile']);
+    const token = this.authService.getToken();
+    if (token) {
+      this.authService.getUserInfo().subscribe({
+        next: (user) => {
+          if (user && user.username === 'Admin') {
+            this.router.navigate(['/admin']).then(() => {
+              window.location.reload();
+            });
+          } else {
+            this.router.navigate(['/profile']).then(() => {
+              window.location.reload();
+            });
+          }
+        },
+        error: () => {
+          this.router.navigate(['/login']);
+        }
+      });
     }
   }
 
   onSubmit() {
     if (this.loginForm.valid) {
       const { username, password } = this.loginForm.value;
-      this.authService.login(username, password).subscribe(
-        () => {
-          this.router.navigate(['/profile']);
+      this.authService.login(username, password).subscribe({
+        next: (response) => {
+          this.authService.getUserInfo().subscribe({
+            next: (user) => {
+              if (user && user.username === 'Admin') {
+                this.router.navigate(['/admin']).then(() => {
+                  window.location.reload();
+                });
+              } else {
+                this.router.navigate(['/profile']).then(() => {
+                  window.location.reload();
+                });
+              }
+            },
+            error: () => {
+              this.router.navigate(['/login']);
+            }
+          });
         },
-        (error) => {
+        error: (error) => {
           this.error = 'Invalid username or password';
         }
-      );
+      });
     }
   }
 }

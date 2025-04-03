@@ -1,0 +1,97 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Admin Dashboard</h2>
+    <button class="btn btn-danger" (click)="logout()">Logout</button>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="selectedTab === 'users'" (click)="onTabChange('users')">
+            Users
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="selectedTab === 'cards'" (click)="onTabChange('cards')">
+            Cards
+          </a>
+        </li>
+      </ul>
+
+      <div class="tab-content mt-3">
+        <!-- Users Tab -->
+        <div *ngIf="selectedTab === 'users'">
+          <div *ngIf="loading" class="text-center">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+          <div *ngIf="error" class="alert alert-danger">
+            {{ error }}
+          </div>
+          <div *ngIf="!loading && !error">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Username</th>
+                  <th>Created At</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let user of users">
+                  <td>{{ user.id }}</td>
+                  <td>{{ user.username }}</td>
+                  <td>{{ user.created_at | date }}</td>
+                  <td>
+                    <button class="btn btn-danger btn-sm" (click)="deleteUser(user.id)">
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Cards Tab -->
+        <div *ngIf="selectedTab === 'cards'">
+          <div *ngIf="loading" class="text-center">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+          <div *ngIf="error" class="alert alert-danger">
+            {{ error }}
+          </div>
+          <div *ngIf="!loading && !error">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Character</th>
+                  <th>Rarity</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let card of cards">
+                  <td>{{ card.name }}</td>
+                  <td>{{ card.character_name }}</td>
+                  <td>{{ card.rarity }}</td>
+                  <td>
+                    <button class="btn btn-danger btn-sm" (click)="deleteCard(card.id)">
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

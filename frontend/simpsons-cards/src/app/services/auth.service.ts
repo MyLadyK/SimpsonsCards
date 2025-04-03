@@ -55,16 +55,36 @@ export class AuthService {
     );
   }
 
-  private getTokenFromStorage(): string | null {
-    return localStorage.getItem('token');
-  }
-
-  private setToken(token: string) {
-    localStorage.setItem('token', token);
+  logout(): void {
+    this.removeToken();
+    this.isAuthenticatedSubject.next(false);
   }
 
   getToken(): string | null {
-    return this.getTokenFromStorage();
+    return localStorage.getItem('token');
+  }
+
+  setToken(token: string): void {
+    localStorage.setItem('token', token);
+  }
+
+  removeToken(): void {
+    localStorage.removeItem('token');
+  }
+
+  getUser(): any {
+    const token = this.getToken();
+    if (!token) return null;
+
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const payload = JSON.parse(window.atob(base64));
+      return payload;
+    } catch (error) {
+      console.error('Error parsing token:', error);
+      return null;
+    }
   }
 
   isTokenValid(): boolean {
@@ -72,43 +92,29 @@ export class AuthService {
     if (!token) return false;
     
     try {
-      const decodedToken = this.decodeToken();
+      const decodedToken = this.getUser();
       const expirationTime = decodedToken.exp * 1000;
       return Date.now() < expirationTime;
     } catch (error) {
+      console.error('Error checking token validity:', error);
       return false;
     }
-  }
-
-  decodeToken(): any {
-    const token = this.getToken();
-    if (!token) return null;
-    
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      return JSON.parse(window.atob(base64));
-    } catch (error) {
-      console.error('Error decoding token:', error);
-      return null;
-    }
-  }
-
-  logout() {
-    localStorage.removeItem('token');
-    this.isAuthenticatedSubject.next(false);
   }
 
   getUserInfo(): Observable<any> {
     const token = this.getToken();
     if (!token) {
-      return of(null);
+      return throwError(() => new Error('No token found'));
     }
 
-    return this.http.get(`${environment.apiUrl}/auth/user`).pipe(
+    return this.http.get(`${environment.apiUrl}/auth/user`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }).pipe(
       catchError((error) => {
         console.error('Error getting user info:', error);
-        return of(null);
+        return throwError(() => error);
       })
     );
   }
