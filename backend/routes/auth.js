@@ -1,3 +1,6 @@
+// Authentication routes
+// This file handles all user authentication endpoints
+
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
@@ -5,9 +8,9 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
 
-// @route   POST /auth/register
-// @desc    Register a new user
-// @access  Public
+// Register new user
+// POST /auth/register
+// Creates a new user account with username and password
 router.post('/register', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -55,9 +58,9 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// @route   POST /auth/login
-// @desc    Login user
-// @access  Public
+// Login user
+// POST /auth/login
+// Authenticates user and returns JWT token
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -99,9 +102,9 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// @route   GET /auth/user
-// @desc    Get user data
-// @access  Private
+// Get user info
+// GET /auth/user
+// Returns user information for authenticated requests
 router.get('/user', auth, async (req, res) => {
   try {
     console.log(' Petición a /auth/user - Token payload:', req.user);

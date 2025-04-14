@@ -1,3 +1,7 @@
+// Main server configuration file
+// This file sets up the Express server and configures all necessary middleware
+
+// Import required modules
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -6,18 +10,20 @@ const db = require('./config/db');
 
 const app = express();
 
-// Configuración detallada de CORS
+// Configure CORS with detailed settings
+// This configuration allows requests from the frontend development server
 const corsOptions = {
-  origin: ['http://localhost:4200'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['Authorization'],
-  credentials: true,
-  preflightContinue: false,
-  optionsSuccessStatus: 204
+  origin: ['http://localhost:4200'], // Allow requests from Angular development server
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Headers that can be used in requests
+  exposedHeaders: ['Authorization'], // Headers that can be exposed to the client
+  credentials: true, // Allow credentials (cookies, authorization headers)
+  preflightContinue: false, // Handle preflight requests
+  optionsSuccessStatus: 204 // Status code to return for successful OPTIONS requests
 };
 
-// Middleware
+// Middleware setup
+// Parse incoming JSON requests
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -32,7 +38,8 @@ app.get('/assets/*', (req, res) => {
   res.sendFile(filePath);
 });
 
-// Aplicar el middleware de autenticación a todas las rutas EXCEPTO /assets/*
+// Apply authentication middleware to all routes EXCEPT /assets/*
+// This allows public access to static assets while protecting other routes
 const auth = require('./middleware/auth');
 app.use((req, res, next) => {
   if (req.path.startsWith('/assets/')) {
@@ -41,9 +48,11 @@ app.use((req, res, next) => {
   auth(req, res, next);
 });
 
-// Routes
-app.use('/auth', require('./routes/auth'));
-app.use('/cards', require('./routes/cards'));
+// Route configurations
+// All API routes are prefixed with /api
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/cards', require('./routes/cards'));
+app.use('/api/admin', require('./routes/admin'));
 
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {
@@ -53,6 +62,7 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
+// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

@@ -5,22 +5,43 @@ import { environment } from '../../environments/environment';
 import { Card } from '../models/card';
 import { AuthService } from './auth.service';
 
+/**
+ * Service for managing card operations
+ * Handles card collection, claiming, and CRUD operations
+ */
 export interface CardClaimResponse {
+  /** Message indicating the result of the card claim */
   message: string;
+  /** Time remaining before next claim attempt */
   remainingTime: number;
+  /** Array of cards that were claimed */
   cards: Card[];
 }
 
+/**
+ * Service for managing card operations
+ * Handles card collection, claiming, and CRUD operations
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class CardService {
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  /** @private */
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) {}
 
+  /**
+   * Retrieves the user's card collection
+   * @returns Promise containing array of cards
+   * @throws Error if request fails
+   * @see /cards/user
+   */
   async getUserCards(): Promise<Card[]> {
     try {
       const token = this.authService.getToken();
-      console.log('CardService - Token para getUserCards:', token);
+      console.log('CardService - Token for getUserCards:', token);
       
       const response = await firstValueFrom(
         this.http.get<Card[]>(`${environment.apiUrl}/cards/user`, {
@@ -39,10 +60,16 @@ export class CardService {
     }
   }
 
+  /**
+   * Claims new cards for the user
+   * @returns Promise containing claim response with claimed cards
+   * @throws Error if claim fails
+   * @see /cards/claim-cards
+   */
   async claimCards(): Promise<CardClaimResponse> {
     try {
       const token = this.authService.getToken();
-      console.log('CardService - Token para claimCards:', token);
+      console.log('CardService - Token for claimCards:', token);
       
       const response = await firstValueFrom(
         this.http.post<CardClaimResponse>(
@@ -78,11 +105,17 @@ export class CardService {
     }
   }
 
-  // Add more card-related methods as needed
+  /**
+   * Retrieves a specific card by ID
+   * @param id The ID of the card to retrieve
+   * @returns Promise containing the card or null if not found
+   * @throws Error if request fails
+   * @see /cards/:id
+   */
   async getCardById(id: number): Promise<Card | null> {
     try {
       const token = this.authService.getToken();
-      console.log('CardService - Token para getCardById:', token);
+      console.log('CardService - Token for getCardById:', token);
       
       const response = await firstValueFrom(
         this.http.get<Card>(`${environment.apiUrl}/cards/${id}`, {
@@ -101,10 +134,17 @@ export class CardService {
     }
   }
 
+  /**
+   * Creates a new card
+   * @param card The card data to create
+   * @returns Promise containing the created card
+   * @throws Error if creation fails
+   * @see /cards
+   */
   async addCard(card: Card): Promise<Card> {
     try {
       const token = this.authService.getToken();
-      console.log('CardService - Token para addCard:', token);
+      console.log('CardService - Token for addCard:', token);
       
       const response = await firstValueFrom(
         this.http.post<Card>(`${environment.apiUrl}/cards`, card, {
@@ -123,10 +163,17 @@ export class CardService {
     }
   }
 
+  /**
+   * Updates an existing card
+   * @param card The card data to update
+   * @returns Promise containing the updated card
+   * @throws Error if update fails
+   * @see /cards/:id
+   */
   async updateCard(card: Card): Promise<Card> {
     try {
       const token = this.authService.getToken();
-      console.log('CardService - Token para updateCard:', token);
+      console.log('CardService - Token for updateCard:', token);
       
       const response = await firstValueFrom(
         this.http.put<Card>(`${environment.apiUrl}/cards/${card.id}`, card, {
@@ -145,10 +192,16 @@ export class CardService {
     }
   }
 
+  /**
+   * Deletes a card by ID
+   * @param id The ID of the card to delete
+   * @throws Error if deletion fails
+   * @see /cards/:id
+   */
   async deleteCard(id: number): Promise<void> {
     try {
       const token = this.authService.getToken();
-      console.log('CardService - Token para deleteCard:', token);
+      console.log('CardService - Token for deleteCard:', token);
       
       await firstValueFrom(
         this.http.delete(`${environment.apiUrl}/cards/${id}`, {

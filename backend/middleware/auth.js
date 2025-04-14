@@ -1,6 +1,18 @@
+/**
+ * Authentication middleware module
+ * Provides middleware functions for protecting routes
+ * Uses JWT for authentication
+ */
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
+/**
+ * Validates JWT token and attaches user data to request
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {Function} next Express next middleware function
+ * @throws {Error} If token is invalid or missing
+ */
 module.exports = async (req, res, next) => {
   try {
     // Logs detallados de la solicitud
