@@ -2,10 +2,10 @@
   "name": "simpsons-cards-backend",
   "version": "1.0.0",
   "description": "Backend for SimpsonsCards - A Simpsons card collection game",
-  "main": "src/index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

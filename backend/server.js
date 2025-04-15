@@ -38,21 +38,12 @@ app.get('/assets/*', (req, res) => {
   res.sendFile(filePath);
 });
 
-// Apply authentication middleware to all routes EXCEPT /assets/*
-// This allows public access to static assets while protecting other routes
-const auth = require('./middleware/auth');
-app.use((req, res, next) => {
-  if (req.path.startsWith('/assets/')) {
-    return next();
-  }
-  auth(req, res, next);
-});
-
 // Route configurations
 // All API routes are prefixed with /api
+const auth = require('./middleware/auth');
 app.use('/api/auth', require('./routes/auth'));
-app.use('/api/cards', require('./routes/cards'));
-app.use('/api/admin', require('./routes/admin'));
+app.use('/api/cards', auth, require('./routes/cards'));
+app.use('/api/admin', auth, require('./routes/admin'));
 
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {

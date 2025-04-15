@@ -109,14 +109,14 @@ router.get('/user', auth, async (req, res) => {
   try {
     console.log(' Petición a /auth/user - Token payload:', req.user);
 
-    if (!req.user || !req.user.userId) {
-      console.error(' Error: req.user.userId no está definido');
+    if (!req.user || !req.user.id) {
+      console.error(' Error: req.user.id no está definido');
       return res.status(400).json({ message: 'Invalid token payload' });
     }
 
-    console.log(' Buscando usuario con ID:', req.user.userId);
+    console.log(' Buscando usuario con ID:', req.user.id);
 
-    const user = await User.findById(req.user.userId);
+    const user = await User.findById(req.user.id);
 
     if (!user) {
       console.log(' Usuario no encontrado en la BD');

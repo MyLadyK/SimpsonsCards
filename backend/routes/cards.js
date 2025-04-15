@@ -200,9 +200,27 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// GET /cards/user - Get all cards of the authenticated user
+router.get('/user', auth, async (req, res) => {
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: 'Usuario no autenticado' });
+    }
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+    const cards = await user.getCollection();
+    res.json(cards || []);
+  } catch (error) {
+    console.error('Error al obtener las cartas del usuario:', error);
+    res.status(500).json({ message: 'Error interno al obtener cartas' });
+  }
+});
+
 // POST claim cards
 // Allows users to claim new cards
-router.post('/claim-cards', async (req, res) => {
+router.post('/claim-cards', auth, async (req, res) => {
   try {
     console.log('Endpoint /claim-cards invocado. User recibido:', req.user);
     
@@ -219,8 +237,7 @@ router.post('/claim-cards', async (req, res) => {
     }
 
     // Get available cards (excluding those already owned by the user)
-    const [rows] = await Card.findAvailableCards(user.id);
-    const availableCards = rows;
+    const availableCards = await Card.findAvailableCards(user.id);
 
     if (!availableCards || availableCards.length === 0) {
       console.log('No available cards found');
@@ -230,15 +247,15 @@ router.post('/claim-cards', async (req, res) => {
     // Add cards to user's collection
     const cardsAdded = [];
     for (const card of availableCards) {
-      const success = await User.addToCollection(user.id, card.id);
+      const success = await user.addToCollection(card.id);
       if (success) {
         cardsAdded.push(card);
       }
     }
 
     // Update user's last claim time
-    await User.updateCardsRemaining(user.id, user.cards_remaining_today - cardsAdded.length);
-    await User.updateLastCardsDrawn(user.id);
+    await user.updateCardsRemaining(user.cards_remaining_today - cardsAdded.length);
+    await user.updateLastCardsDrawn();
 
     console.log('Cards claimed successfully:', cardsAdded);
     
