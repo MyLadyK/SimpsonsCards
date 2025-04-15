@@ -93,10 +93,11 @@ export class AuthService {
   /**
    * Retrieves the stored JWT token from localStorage
    * @returns The stored token or null if none exists
-   * @private
    */
-  private getToken(): string | null {
-    return localStorage.getItem('token');
+  // Cambiado de private a public para permitir acceso desde otros componentes y servicios
+  public getToken(): string | null {
+    const token = localStorage.getItem('token');
+    return token;
   }
 
   /**
