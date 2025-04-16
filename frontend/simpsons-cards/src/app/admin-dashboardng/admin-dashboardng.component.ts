@@ -6,6 +6,7 @@ import { Card } from '../models/card';
 import { User } from '../models/user';
 import { AuthService } from '../services/auth.service';
 import { FormsModule } from '@angular/forms'; 
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-admin-dashboardng',
@@ -15,6 +16,7 @@ import { FormsModule } from '@angular/forms';
   standalone: true
 })
 export class AdminDashboardngComponent implements OnInit {
+  public environment = environment;
   users: User[] = [];
   cards: Card[] = [];
   selectedTab = 'users';

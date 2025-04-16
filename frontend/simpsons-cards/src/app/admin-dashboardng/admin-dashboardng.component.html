@@ -122,7 +122,7 @@
                   <td>
                     <img 
                       [src]="card.image_url" 
-                      alt="{{ card.name }}" 
+                      [alt]="card.name" 
                       class="img-thumbnail me-2" 
                       style="width: 48px; height: 48px; object-fit: cover; cursor: pointer;"
                       (click)="showImageModal(card.image_url, card.name)"
