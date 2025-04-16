@@ -23,11 +23,19 @@
 
   <div class="card-grid-wrapper" *ngIf="cards.length > 0">
     <div class="card-grid">
-      <div class="card-item" *ngFor="let card of cards">
+      <div class="card-item" *ngFor="let card of cards" (click)="onCardClick(card)">
+        <span class="rarity-badge" [ngClass]="{
+          'rarity-common': card.rarity === 'Common',
+          'rarity-uncommon': card.rarity === 'Uncommon',
+          'rarity-rare': card.rarity === 'Rare',
+          'rarity-epic': card.rarity === 'Epic',
+          'rarity-legendary': card.rarity === 'Legendary'
+        }">
+          {{ card.rarity }}
+        </span>
         <img [src]="card.image_url" [alt]="card.name" class="card-image">
         <div class="card-info">
           <h4>{{ card.name }}</h4>
-          <p><strong>Rarity:</strong> {{ card.rarity }}</p>
         </div>
       </div>
     </div>
@@ -39,6 +47,34 @@
 
   <div class="loading" *ngIf="loading">
     <p>Loading cards...</p>
+  </div>
+
+  <!-- Modal Bootstrap para la carta seleccionada -->
+  <div class="modal fade show card-modal" tabindex="-1" [ngStyle]="{ display: selectedCard ? 'block' : 'none', background: 'rgba(0,0,0,0.5)' }" *ngIf="selectedCard">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ selectedCard.name }}</h5>
+          <button type="button" class="btn-close" (click)="onCloseModal()"></button>
+        </div>
+        <div class="modal-body text-center">
+          <span class="rarity-badge" [ngClass]="{
+            'rarity-common': selectedCard.rarity === 'Common',
+            'rarity-uncommon': selectedCard.rarity === 'Uncommon',
+            'rarity-rare': selectedCard.rarity === 'Rare',
+            'rarity-epic': selectedCard.rarity === 'Epic',
+            'rarity-legendary': selectedCard.rarity === 'Legendary'
+          }">
+            {{ selectedCard.rarity }}
+          </span>
+          <img [src]="selectedCard.image_url" [alt]="selectedCard.name" class="modal-card-image mb-3">
+          <p>{{ selectedCard.description }}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="onCloseModal()">Close</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 

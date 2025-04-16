@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS cards (
     character_name VARCHAR(100) NOT NULL,
     image_url VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
-    rarity ENUM('Common', 'Uncommon', 'Rare', 'Legendary') NOT NULL,
+    rarity ENUM('Common', 'Uncommon', 'Rare', 'Epic', 'Legendary') NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

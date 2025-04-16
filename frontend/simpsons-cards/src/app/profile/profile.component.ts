@@ -21,6 +21,7 @@ export class ProfileComponent implements OnInit {
   showClaimError = false;
   showClaimSuccess = false;
   claimErrorMessage = '';
+  selectedCard: any = null;
 
   private authService = inject(AuthService);
   private cardService = inject(CardService);
@@ -112,6 +113,14 @@ export class ProfileComponent implements OnInit {
     } finally {
       this.loading = false;
     }
+  }
+
+  onCardClick(card: any) {
+    this.selectedCard = card;
+  }
+
+  onCloseModal() {
+    this.selectedCard = null;
   }
 
   logout() {
