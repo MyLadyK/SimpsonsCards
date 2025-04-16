@@ -43,7 +43,7 @@ export class AuthService {
    * @see /auth/register
    */
   register(username: string, password: string): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/auth/register`, { username, password }).pipe(
+    return this.http.post(`${environment.apiUrl}/api/auth/register`, { username, password }).pipe(
       tap((response: any) => {
         if (response.token) {
           this.setToken(response.token);
@@ -66,7 +66,7 @@ export class AuthService {
    * @see /auth/login
    */
   login(username: string, password: string): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/auth/login`, { username, password }).pipe(
+    return this.http.post(`${environment.apiUrl}/api/auth/login`, { username, password }).pipe(
       tap((response: any) => {
         if (response.token) {
           this.setToken(response.token);
@@ -160,7 +160,7 @@ export class AuthService {
    * Retrieves user information from the server
    * @returns Observable containing user information
    * @throws Error if user info retrieval fails
-   * @see /auth/user
+   * @see /api/auth/user
    */
   getUserInfo(): Observable<any> {
     const token = this.getToken();
@@ -168,7 +168,7 @@ export class AuthService {
       return throwError(() => new Error('No token found'));
     }
 
-    return this.http.get(`${environment.apiUrl}/auth/user`, {
+    return this.http.get(`${environment.apiUrl}/api/auth/user`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

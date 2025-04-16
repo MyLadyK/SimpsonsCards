@@ -72,8 +72,8 @@ const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const character = req.body.character_name;
     const dir = normalizeCharacterDir(character);
-    // Ruta ABSOLUTA al directorio assets del frontend
-    const dest = path.join(__dirname, '../../frontend/simpsons-cards/src/assets', dir);
+    // Ruta ABSOLUTA al directorio public del backend
+    const dest = path.join(__dirname, '../public', dir);
     fs.mkdirSync(dest, { recursive: true });
     cb(null, dest);
   },
