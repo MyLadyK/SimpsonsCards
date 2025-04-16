@@ -6,6 +6,9 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const Card = require('../models/Card');
 const db = require('../config/db');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 // Apply authentication middleware to all admin routes
 router.use(auth);
@@ -55,14 +58,55 @@ router.get('/cards', async (req, res) => {
   }
 });
 
+// Normaliza el nombre del personaje para el directorio
+function normalizeCharacterDir(name) {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/ /g, '_')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // quita tildes
+}
+
+// Configuración de multer para almacenamiento dinámico
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const character = req.body.character_name;
+    const dir = normalizeCharacterDir(character);
+    const dest = path.join(__dirname, '../public', dir);
+    // Crea el directorio si no existe
+    fs.mkdirSync(dest, { recursive: true });
+    cb(null, dest);
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '_' + file.originalname.replace(/\s/g, '_'));
+  }
+});
+const upload = multer({ storage });
+
 // POST /admin/cards
-// Creates a new card in the system
-router.post('/cards', async (req, res) => {
+// Creates a new card in the system (con imagen)
+router.post('/cards', upload.single('image'), async (req, res) => {
   try {
-    const { name, character_name, image_url, description, rarity } = req.body;
+    const { name, character_name, description, rarity } = req.body;
+    let image_url = req.body.image_url || '';
+    let dir = '';
+    if (req.file) {
+      dir = normalizeCharacterDir(character_name);
+      console.log('Dir normalizado:', dir);
+      image_url = `/assets/${dir}/${req.file.filename}`;
+    }
+    // LOG para depuración
+    console.log('Valores recibidos:', { name, character_name, image_url, description, rarity });
+    const safe = v => v === undefined ? null : v;
     const [result] = await db.execute(
       'INSERT INTO cards (name, character_name, image_url, description, rarity) VALUES (?, ?, ?, ?, ?)',
-      [name, character_name, image_url, description, rarity]
+      [
+        safe(name),
+        safe(character_name),
+        safe(image_url),
+        safe(description),
+        safe(rarity)
+      ]
     );
     res.status(201).json({
       id: result.insertId,

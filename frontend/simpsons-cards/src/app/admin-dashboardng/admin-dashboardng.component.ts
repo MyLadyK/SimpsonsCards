@@ -28,6 +28,16 @@ export class AdminDashboardngComponent implements OnInit {
   modalDescription: string = '';
   modalCardId: number | null = null;
   modalDescSaved: boolean = false;
+  showAddCardForm = false;
+  newCard: Card = {
+    name: '',
+    character_name: '',
+    image_url: '',
+    description: '',
+    rarity: 'Common'
+  };
+  addCardSuccess = false;
+  addCardError: string | null = null;
 
   constructor(
     private adminService: AdminService,
@@ -177,5 +187,36 @@ export class AdminDashboardngComponent implements OnInit {
         });
       }
     }
+  }
+
+  toggleAddCardForm() {
+    this.showAddCardForm = !this.showAddCardForm;
+    this.addCardSuccess = false;
+    this.addCardError = null;
+    if (this.showAddCardForm) {
+      this.newCard = {
+        name: '',
+        character_name: '',
+        image_url: '',
+        description: '',
+        rarity: 'Common'
+      };
+    }
+  }
+
+  addCard() {
+    this.addCardSuccess = false;
+    this.addCardError = null;
+    this.adminService.addCard(this.newCard).subscribe({
+      next: () => {
+        this.addCardSuccess = true;
+        this.loadCards();
+        this.toggleAddCardForm();
+      },
+      error: (error) => {
+        console.error('Error adding card:', error);
+        this.addCardError = 'Error adding card';
+      }
+    });
   }
 }

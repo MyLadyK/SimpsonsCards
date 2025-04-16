@@ -67,6 +67,46 @@
             {{ error }}
           </div>
           <div *ngIf="!loading && !error">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h4>Cards</h4>
+              <button class="btn btn-success btn-sm" (click)="toggleAddCardForm()">
+                {{ showAddCardForm ? 'Cancel' : 'Add Card' }}
+              </button>
+            </div>
+            <form *ngIf="showAddCardForm" (ngSubmit)="addCard()" class="mb-3 border rounded p-3 bg-light">
+              <div class="row g-2">
+                <div class="col-md-3">
+                  <input [(ngModel)]="newCard.name" name="name" required class="form-control" placeholder="Name" />
+                </div>
+                <div class="col-md-3">
+                  <input [(ngModel)]="newCard.character_name" name="character_name" required class="form-control" placeholder="Character" />
+                </div>
+                <div class="col-md-3">
+                  <input [(ngModel)]="newCard.image_url" name="image_url" required class="form-control" placeholder="Image URL" />
+                </div>
+                <div class="col-md-3">
+                  <select [(ngModel)]="newCard.rarity" name="rarity" required class="form-select">
+                    <option value="">Rarity</option>
+                    <option value="Common">Common</option>
+                    <option value="Uncommon">Uncommon</option>
+                    <option value="Rare">Rare</option>
+                    <option value="Legendary">Legendary</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row g-2 mt-2">
+                <div class="col-12">
+                  <textarea [(ngModel)]="newCard.description" name="description" rows="2" required class="form-control" placeholder="Description"></textarea>
+                </div>
+              </div>
+              <div class="row g-2 mt-2">
+                <div class="col-12 text-end">
+                  <button class="btn btn-primary" type="submit">Save</button>
+                </div>
+              </div>
+              <div *ngIf="addCardSuccess" class="alert alert-success mt-2">Card added successfully!</div>
+              <div *ngIf="addCardError" class="alert alert-danger mt-2">{{ addCardError }}</div>
+            </form>
             <table class="table">
               <thead>
                 <tr>
