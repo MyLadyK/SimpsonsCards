@@ -25,6 +25,9 @@ export class AdminDashboardngComponent implements OnInit {
   imageModalOpen = false;
   imageModalUrl: string | null = null;
   imageModalTitle: string | null = null;
+  modalDescription: string = '';
+  modalCardId: number | null = null;
+  modalDescSaved: boolean = false;
 
   constructor(
     private adminService: AdminService,
@@ -134,14 +137,45 @@ export class AdminDashboardngComponent implements OnInit {
 
   // Modal para mostrar imagen grande
   showImageModal(url: string, title: string) {
+    const card = this.cards.find(c => c.image_url === url && c.name === title);
     this.imageModalUrl = url;
     this.imageModalTitle = title;
     this.imageModalOpen = true;
+    this.modalDescSaved = false;
+    if (card) {
+      this.modalDescription = card.description;
+      this.modalCardId = card.id ?? null;
+    } else {
+      this.modalDescription = '';
+      this.modalCardId = null;
+    }
   }
 
   closeImageModal() {
     this.imageModalOpen = false;
     this.imageModalUrl = null;
     this.imageModalTitle = null;
+    this.modalDescription = '';
+    this.modalCardId = null;
+    this.modalDescSaved = false;
+  }
+
+  saveModalDescription() {
+    if (this.modalCardId != null) {
+      const card = this.cards.find(c => c.id === this.modalCardId);
+      if (card) {
+        const updatedCard = { ...card, description: this.modalDescription };
+        this.adminService.updateCard(updatedCard).subscribe({
+          next: () => {
+            this.loadCards();
+            this.modalDescSaved = true;
+          },
+          error: (error) => {
+            console.error('Error updating description:', error);
+            this.error = 'Error updating description';
+          }
+        });
+      }
+    }
   }
 }
