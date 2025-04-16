@@ -22,6 +22,9 @@ export class AdminDashboardngComponent implements OnInit {
   error: string | null = null;
   editCardId: number | null = null;
   editCard: Card | null = null;
+  imageModalOpen = false;
+  imageModalUrl: string | null = null;
+  imageModalTitle: string | null = null;
 
   constructor(
     private adminService: AdminService,
@@ -127,5 +130,18 @@ export class AdminDashboardngComponent implements OnInit {
   logout() {
     this.authService.logout();
     window.location.href = '/login';
+  }
+
+  // Modal para mostrar imagen grande
+  showImageModal(url: string, title: string) {
+    this.imageModalUrl = url;
+    this.imageModalTitle = title;
+    this.imageModalOpen = true;
+  }
+
+  closeImageModal() {
+    this.imageModalOpen = false;
+    this.imageModalUrl = null;
+    this.imageModalTitle = null;
   }
 }

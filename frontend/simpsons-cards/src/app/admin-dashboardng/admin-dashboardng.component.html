@@ -70,6 +70,7 @@
             <table class="table">
               <thead>
                 <tr>
+                  <th>Image</th>
                   <th>Name</th>
                   <th>Character</th>
                   <th>Rarity</th>
@@ -78,6 +79,15 @@
               </thead>
               <tbody>
                 <tr *ngFor="let card of cards">
+                  <td>
+                    <img 
+                      [src]="card.image_url" 
+                      alt="{{ card.name }}" 
+                      class="img-thumbnail me-2" 
+                      style="width: 48px; height: 48px; object-fit: cover; cursor: pointer;"
+                      (click)="showImageModal(card.image_url, card.name)"
+                    />
+                  </td>
                   <td *ngIf="editCardId !== card.id">{{ card.name }}</td>
                   <td *ngIf="editCardId === card.id && editCard">
                     <input [(ngModel)]="editCard.name" class="form-control form-control-sm" />
@@ -114,6 +124,21 @@
             </table>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para mostrar imagen grande -->
+<div class="modal fade" tabindex="-1" [ngClass]="{ show: imageModalOpen }" [ngStyle]="{ display: imageModalOpen ? 'block' : 'none' }" (click)="closeImageModal()" style="background: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ imageModalTitle }}</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="closeImageModal()"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img [src]="imageModalUrl" [alt]="imageModalTitle" style="max-width: 100%; max-height: 400px;" />
       </div>
     </div>
   </div>
