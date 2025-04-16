@@ -7,6 +7,7 @@ import { User } from '../models/user';
 import { AuthService } from '../services/auth.service';
 import { FormsModule } from '@angular/forms'; 
 import { environment } from '../../environments/environment';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin-dashboardng',
@@ -43,7 +44,8 @@ export class AdminDashboardngComponent implements OnInit {
 
   constructor(
     private adminService: AdminService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -144,7 +146,7 @@ export class AdminDashboardngComponent implements OnInit {
 
   logout() {
     this.authService.logout();
-    window.location.href = '/login';
+    this.router.navigate(['/']);
   }
 
   // Modal para mostrar imagen grande

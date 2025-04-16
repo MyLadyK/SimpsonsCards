@@ -44,7 +44,7 @@ export class CardService {
       console.log('CardService - Token for getUserCards:', token);
       
       const response = await firstValueFrom(
-        this.http.get<Card[]>(`${environment.apiUrl}/cards/user`, {
+        this.http.get<Card[]>(`${environment.apiUrl}/api/cards/user`, {
           headers: { Authorization: `Bearer ${token}` }
         }).pipe(
           catchError((error) => {
@@ -73,7 +73,7 @@ export class CardService {
       
       const response = await firstValueFrom(
         this.http.post<CardClaimResponse>(
-          `${environment.apiUrl}/cards/claim-cards`,
+          `${environment.apiUrl}/api/cards/claim-cards`,
           {},
           { headers: { Authorization: `Bearer ${token}` } }
         ).pipe(

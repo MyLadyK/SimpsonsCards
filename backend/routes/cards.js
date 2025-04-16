@@ -63,6 +63,24 @@ router.get('/', async (req, res) => {
   }
 });
 
+// GET /cards/user - Get all cards of the authenticated user
+router.get('/user', async (req, res) => {
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: 'Usuario no autenticado' });
+    }
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+    const cards = await user.getCollection();
+    res.json(cards || []);
+  } catch (error) {
+    console.error('Error al obtener las cartas del usuario:', error);
+    res.status(500).json({ message: 'Error interno al obtener cartas' });
+  }
+});
+
 /**
  * @swagger
  * /cards/{id}:
@@ -197,24 +215,6 @@ router.delete('/:id', async (req, res) => {
   } catch (err) {
     console.error('Error deleting card:', err);
     res.status(500).send(err);
-  }
-});
-
-// GET /cards/user - Get all cards of the authenticated user
-router.get('/user', auth, async (req, res) => {
-  try {
-    if (!req.user || !req.user.id) {
-      return res.status(401).json({ message: 'Usuario no autenticado' });
-    }
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ message: 'Usuario no encontrado' });
-    }
-    const cards = await user.getCollection();
-    res.json(cards || []);
-  } catch (error) {
-    console.error('Error al obtener las cartas del usuario:', error);
-    res.status(500).json({ message: 'Error interno al obtener cartas' });
   }
 });
 
