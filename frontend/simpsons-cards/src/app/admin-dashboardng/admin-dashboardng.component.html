@@ -121,11 +121,11 @@
                 <tr *ngFor="let card of cards">
                   <td>
                     <img 
-                      [src]="card.image_url" 
+                      [src]="environment.apiUrl + card.image_url" 
                       [alt]="card.name" 
                       class="img-thumbnail me-2" 
                       style="width: 48px; height: 48px; object-fit: cover; cursor: pointer;"
-                      (click)="showImageModal(card.image_url, card.name)"
+                      (click)="showImageModal(environment.apiUrl + card.image_url, card.name)"
                     />
                   </td>
                   <td *ngIf="editCardId !== card.id">{{ card.name }}</td>
