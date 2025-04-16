@@ -78,10 +78,33 @@
               </thead>
               <tbody>
                 <tr *ngFor="let card of cards">
-                  <td>{{ card.name }}</td>
-                  <td>{{ card.character_name }}</td>
-                  <td>{{ card.rarity }}</td>
+                  <td *ngIf="editCardId !== card.id">{{ card.name }}</td>
+                  <td *ngIf="editCardId === card.id && editCard">
+                    <input [(ngModel)]="editCard.name" class="form-control form-control-sm" />
+                  </td>
+                  <td *ngIf="editCardId !== card.id">{{ card.character_name }}</td>
+                  <td *ngIf="editCardId === card.id && editCard">
+                    <input [(ngModel)]="editCard.character_name" class="form-control form-control-sm" />
+                  </td>
+                  <td *ngIf="editCardId !== card.id">{{ card.rarity }}</td>
+                  <td *ngIf="editCardId === card.id && editCard">
+                    <select [(ngModel)]="editCard.rarity" class="form-select form-select-sm">
+                      <option value="Common">Common</option>
+                      <option value="Uncommon">Uncommon</option>
+                      <option value="Rare">Rare</option>
+                      <option value="Legendary">Legendary</option>
+                    </select>
+                  </td>
                   <td>
+                    <button *ngIf="editCardId !== card.id" class="btn btn-primary btn-sm me-1" (click)="startEditCard(card)">
+                      Edit
+                    </button>
+                    <button *ngIf="editCardId === card.id" class="btn btn-success btn-sm me-1" (click)="saveEditCard()">
+                      Save
+                    </button>
+                    <button *ngIf="editCardId === card.id" class="btn btn-secondary btn-sm me-1" (click)="cancelEditCard()">
+                      Cancel
+                    </button>
                     <button class="btn btn-danger btn-sm" (click)="deleteCard(card.id)">
                       Delete
                     </button>

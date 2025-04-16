@@ -5,12 +5,13 @@ import { AdminService } from '../services/admin.service';
 import { Card } from '../models/card';
 import { User } from '../models/user';
 import { AuthService } from '../services/auth.service';
+import { FormsModule } from '@angular/forms'; 
 
 @Component({
   selector: 'app-admin-dashboardng',
   templateUrl: './admin-dashboardng.component.html',
   styleUrls: ['./admin-dashboardng.component.css'],
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   standalone: true
 })
 export class AdminDashboardngComponent implements OnInit {
@@ -19,6 +20,8 @@ export class AdminDashboardngComponent implements OnInit {
   selectedTab = 'users';
   loading = true;
   error: string | null = null;
+  editCardId: number | null = null;
+  editCard: Card | null = null;
 
   constructor(
     private adminService: AdminService,
@@ -78,8 +81,7 @@ export class AdminDashboardngComponent implements OnInit {
 
   deleteCard(cardId: number | undefined) {
     if (cardId === undefined) return;
-    
-    if (confirm('¿Estás seguro de que quieres eliminar esta tarjeta?')) {
+    if (confirm('¿Estás seguro de que quieres eliminar esta carta?')) {
       this.adminService.deleteCard(cardId).subscribe({
         next: () => {
           this.loadCards();
@@ -90,6 +92,32 @@ export class AdminDashboardngComponent implements OnInit {
         }
       });
     }
+  }
+
+  startEditCard(card: Card) {
+    this.editCardId = card.id ?? null;
+    // Copia profunda para evitar modificar el array hasta guardar
+    this.editCard = { ...card };
+  }
+
+  saveEditCard() {
+    if (!this.editCard) return;
+    this.adminService.updateCard(this.editCard).subscribe({
+      next: (updatedCard) => {
+        this.editCardId = null;
+        this.editCard = null;
+        this.loadCards();
+      },
+      error: (error) => {
+        console.error('Error updating card:', error);
+        this.error = 'Error updating card';
+      }
+    });
+  }
+
+  cancelEditCard() {
+    this.editCardId = null;
+    this.editCard = null;
   }
 
   onTabChange(tab: string) {
