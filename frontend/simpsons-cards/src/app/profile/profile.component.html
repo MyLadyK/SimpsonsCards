@@ -19,8 +19,10 @@
         Cards claimed successfully!
       </div>
     </div>
+  </div>
 
-    <div class="card-grid" *ngIf="cards.length > 0">
+  <div class="card-grid-wrapper" *ngIf="cards.length > 0">
+    <div class="card-grid">
       <div class="card-item" *ngFor="let card of cards">
         <img [src]="card.image_url" [alt]="card.name" class="card-image">
         <div class="card-info">
@@ -29,10 +31,10 @@
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="empty-collection" *ngIf="cards.length === 0">
-      <p>Your collection is empty. Start collecting cards!</p>
-    </div>
+  <div class="empty-collection" *ngIf="cards.length === 0">
+    <p>Your collection is empty. Start collecting cards!</p>
   </div>
 
   <div class="loading" *ngIf="loading">
