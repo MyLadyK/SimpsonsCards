@@ -26,6 +26,7 @@ router.get('/users', async (req, res) => {
 // DELETE /admin/users/:id
 // Deletes a user by their ID
 router.delete('/users/:id', async (req, res) => {
+  console.log('DELETE /api/admin/users/:id', req.params.id); 
   try {
     const userId = req.params.id;
     const [result] = await db.execute('DELETE FROM users WHERE id = ?', [userId]);

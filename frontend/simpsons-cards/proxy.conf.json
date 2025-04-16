@@ -1,5 +1,5 @@
 {
-  "/api/auth/*": {
+  "/api/auth": {
     "target": "http://localhost:3000",
     "secure": false,
     "changeOrigin": true,
@@ -8,7 +8,7 @@
       "Connection": "keep-alive"
     }
   },
-  "/api/cards/*": {
+  "/api/cards": {
     "target": "http://localhost:3000",
     "secure": false,
     "changeOrigin": true,
@@ -17,7 +17,7 @@
       "Connection": "keep-alive"
     }
   },
-  "/api/admin/*": {
+  "/api/admin": {
     "target": "http://localhost:3000",
     "secure": false,
     "changeOrigin": true,

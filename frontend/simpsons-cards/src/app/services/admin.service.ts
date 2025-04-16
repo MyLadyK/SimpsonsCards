@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Card } from '../models/card';
 import { User } from '../models/user';
+import { AuthService } from './auth.service';
 
 /**
  * Service for handling administrative operations
@@ -14,7 +15,7 @@ import { User } from '../models/user';
 })
 export class AdminService {
   /** @private */
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   /**
    * Retrieves a list of all users
@@ -23,7 +24,9 @@ export class AdminService {
    * @see /admin/users
    */
   getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(`${environment.apiUrl}/admin/users`);
+    return this.http.get<User[]>(`${environment.apiUrl}/admin/users`, {
+      headers: this.getAuthHeaders()
+    });
   }
 
   /**
@@ -34,7 +37,9 @@ export class AdminService {
    * @see /admin/users/:id
    */
   deleteUser(userId: number): Observable<void> {
-    return this.http.delete<void>(`${environment.apiUrl}/admin/users/${userId}`);
+    return this.http.delete<void>(`${environment.apiUrl}/admin/users/${userId}`, {
+      headers: this.getAuthHeaders()
+    });
   }
 
   /**
@@ -44,7 +49,9 @@ export class AdminService {
    * @see /admin/cards
    */
   getCards(): Observable<Card[]> {
-    return this.http.get<Card[]>(`${environment.apiUrl}/admin/cards`);
+    return this.http.get<Card[]>(`${environment.apiUrl}/admin/cards`, {
+      headers: this.getAuthHeaders()
+    });
   }
 
   /**
@@ -55,7 +62,9 @@ export class AdminService {
    * @see /admin/cards
    */
   addCard(card: Card): Observable<Card> {
-    return this.http.post<Card>(`${environment.apiUrl}/admin/cards`, card);
+    return this.http.post<Card>(`${environment.apiUrl}/admin/cards`, card, {
+      headers: this.getAuthHeaders()
+    });
   }
 
   /**
@@ -66,7 +75,9 @@ export class AdminService {
    * @see /admin/cards/:id
    */
   updateCard(card: Card): Observable<Card> {
-    return this.http.put<Card>(`${environment.apiUrl}/admin/cards/${card.id}`, card);
+    return this.http.put<Card>(`${environment.apiUrl}/admin/cards/${card.id}`, card, {
+      headers: this.getAuthHeaders()
+    });
   }
 
   /**
@@ -77,6 +88,15 @@ export class AdminService {
    * @see /admin/cards/:id
    */
   deleteCard(cardId: number): Observable<void> {
-    return this.http.delete<void>(`${environment.apiUrl}/admin/cards/${cardId}`);
+    return this.http.delete<void>(`${environment.apiUrl}/admin/cards/${cardId}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  private getAuthHeaders(): HttpHeaders {
+    const token = this.authService.getToken();
+    return new HttpHeaders({
+      Authorization: token ? `Bearer ${token}` : ''
+    });
   }
 }
