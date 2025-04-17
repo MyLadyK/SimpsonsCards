@@ -8,6 +8,7 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const Card = require('../models/Card');
 const User = require('../models/User');
+const db = require('../config/db');
 
 /**
  * @swagger
@@ -218,6 +219,47 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// Seleccionar 4 cartas aleatorias (permitiendo repetidas)
+function getRandomCards(cards, n) {
+  const result = [];
+  for (let i = 0; i < n; i++) {
+    const randomIndex = Math.floor(Math.random() * cards.length);
+    result.push(cards[randomIndex]);
+  }
+  return result;
+}
+
+// POST /cards/claim-cards - Claim 4 random cards for the user
+router.post('/claim-cards', auth, async (req, res) => {
+  try {
+    // Buscar usuario por id
+    const [users] = await db.query('SELECT * FROM users WHERE id = ?', [req.user.id]);
+    if (!users || users.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    // Obtener todas las cartas de la base de datos
+    const [allCards] = await db.query('SELECT * FROM cards');
+    if (!allCards || allCards.length === 0) {
+      return res.status(404).json({ message: 'No hay cartas disponibles en la base de datos' });
+    }
+    const selectedCards = getRandomCards(allCards, 4);
+    // Insertar las cartas reclamadas en user_cards (permitiendo repetidas)
+    const insertQueries = selectedCards.map(card => `(${req.user.id}, ${card.id})`).join(', ');
+    await db.query(`INSERT INTO user_cards (user_id, card_id) VALUES ${insertQueries}`);
+    // Actualizar el last claim time
+    await db.query('UPDATE users SET last_cards_drawn = ? WHERE id = ?', [new Date(), req.user.id]);
+    // Log único para depuración
+    console.log('DEBUG_BACKEND_UNICO', selectedCards.length, selectedCards.map(c => c.id));
+    res.json({
+      message: 'DEBUG SOLO 4',
+      cards: selectedCards
+    });
+  } catch (error) {
+    console.error('Error claiming cards:', error);
+    res.status(500).json({ message: 'Error claiming cards' });
+  }
+});
+
 // POST claim cards
 // Allows users to claim new cards
 router.post('/claim-cards', auth, async (req, res) => {
@@ -230,14 +272,14 @@ router.post('/claim-cards', auth, async (req, res) => {
     }
 
     // Check if user exists
-    const user = await User.findById(req.user.id);
-    if (!user) {
+    const [users] = await db.query('SELECT * FROM users WHERE id = ?', [req.user.id]);
+    if (!users || users.length === 0) {
       console.error('User not found in database:', req.user.id);
       return res.status(401).json({ message: 'Usuario no encontrado' });
     }
 
     // Get available cards (excluding those already owned by the user)
-    const availableCards = await Card.findAvailableCards(user.id);
+    const [availableCards] = await db.query('SELECT * FROM cards WHERE id NOT IN (SELECT card_id FROM user_cards WHERE user_id = ?)', [req.user.id]);
 
     if (!availableCards || availableCards.length === 0) {
       console.log('No available cards found');
@@ -247,22 +289,21 @@ router.post('/claim-cards', auth, async (req, res) => {
     // Add cards to user's collection
     const cardsAdded = [];
     for (const card of availableCards) {
-      const success = await user.addToCollection(card.id);
-      if (success) {
+      const [result] = await db.query('INSERT INTO user_cards (user_id, card_id) VALUES (?, ?)', [req.user.id, card.id]);
+      if (result.affectedRows > 0) {
         cardsAdded.push(card);
       }
     }
 
     // Update user's last claim time
-    await user.updateCardsRemaining(user.cards_remaining_today - cardsAdded.length);
-    await user.updateLastCardsDrawn();
+    await db.query('UPDATE users SET last_cards_drawn = ? WHERE id = ?', [new Date(), req.user.id]);
 
     console.log('Cards claimed successfully:', cardsAdded);
     
     res.json({
       message: 'Cartas reclamadas exitosamente',
       cards: cardsAdded,
-      remainingCards: user.cards_remaining_today - cardsAdded.length
+      remainingCards: availableCards.length - cardsAdded.length
     });
 
   } catch (error) {

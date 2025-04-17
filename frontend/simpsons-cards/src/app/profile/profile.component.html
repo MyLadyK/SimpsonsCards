@@ -58,16 +58,15 @@
           <button type="button" class="btn-close" (click)="onCloseModal()"></button>
         </div>
         <div class="modal-body text-center">
-          <span class="rarity-badge" [ngClass]="{
-            'rarity-common': selectedCard.rarity === 'Common',
-            'rarity-uncommon': selectedCard.rarity === 'Uncommon',
-            'rarity-rare': selectedCard.rarity === 'Rare',
-            'rarity-epic': selectedCard.rarity === 'Epic',
-            'rarity-legendary': selectedCard.rarity === 'Legendary'
-          }">
-            {{ selectedCard.rarity }}
-          </span>
-          <img [src]="selectedCard.image_url" [alt]="selectedCard.name" class="modal-card-image mb-3">
+          <div [ngClass]="{
+            'modal-card-border-common': selectedCard.rarity === 'Common',
+            'modal-card-border-uncommon': selectedCard.rarity === 'Uncommon',
+            'modal-card-border-rare': selectedCard.rarity === 'Rare',
+            'modal-card-border-epic': selectedCard.rarity === 'Epic',
+            'modal-card-border-legendary': selectedCard.rarity === 'Legendary'
+          }" class="modal-card-image-wrapper mb-3">
+            <img [src]="selectedCard.image_url" [alt]="selectedCard.name" class="modal-card-image">
+          </div>
           <p>{{ selectedCard.description }}</p>
         </div>
         <div class="modal-footer">

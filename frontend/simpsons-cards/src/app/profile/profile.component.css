@@ -201,13 +201,54 @@
   margin-bottom: 1em;
 }
 
+.modal-card-image-wrapper {
+  display: inline-block;
+  padding: 8px;
+  border-radius: 1em;
+  margin-bottom: 1em;
+  box-shadow: 0 0 24px 0 rgba(0,0,0,0.08);
+}
+
+/* Glow animado para Epic y Legendary */
+@keyframes epic-glow {
+  0% { box-shadow: 0 0 20px 6px #c8a2e3, 0 0 10px 2px #a084ca; }
+  50% { box-shadow: 0 0 36px 16px #c8a2e3cc, 0 0 20px 6px #a084cacc; }
+  100% { box-shadow: 0 0 20px 6px #c8a2e3, 0 0 10px 2px #a084ca; }
+}
+@keyframes legendary-glow {
+  0% { box-shadow: 0 0 24px 8px #ffe066, 0 0 10px 2px #ffd700; }
+  50% { box-shadow: 0 0 48px 24px #ffe066cc, 0 0 20px 8px #ffd700cc; }
+  100% { box-shadow: 0 0 24px 8px #ffe066, 0 0 10px 2px #ffd700; }
+}
+
+.modal-card-border-epic {
+  border: 7px solid #b18be3;
+  animation: epic-glow 1.6s infinite alternate;
+}
+
+.modal-card-border-legendary {
+  border: 7px solid #ffd700;
+  animation: legendary-glow 1.8s infinite alternate;
+}
+
+/* Glow estático/destello para las demás rarezas */
+.modal-card-border-common {
+  border: 7px solid #ddd;
+  box-shadow: 0 0 8px 2px #bbb8;
+}
+.modal-card-border-uncommon {
+  border: 7px solid #8fd19e;
+  box-shadow: 0 0 14px 3px #c3e6cb88;
+}
+.modal-card-border-rare {
+  border: 7px solid #5bb9e3;
+  box-shadow: 0 0 18px 5px #7ec8e388;
+}
+
 .modal-card-image {
-  width: 220px;
-  height: 320px;
-  object-fit: cover;
-  border-radius: 10px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.18);
-  transition: box-shadow 0.2s;
+  max-width: 100%;
+  border-radius: 0.7em;
+  background: white;
 }
 
 .card-modal .modal-header {
