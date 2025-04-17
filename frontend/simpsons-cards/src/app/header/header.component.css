@@ -21,6 +21,7 @@
 }
 
 .simpsons-navbar .navbar-nav .nav-link {
+  cursor: pointer;
   color: #222 !important;
   font-weight: bold;
   font-size: 1.1rem;

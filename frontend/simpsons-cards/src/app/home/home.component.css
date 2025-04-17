@@ -65,22 +65,29 @@ h1 {
 
 .carousel-caption {
   bottom: 100px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 18px;
+  padding: 18px 28px;
+  color: #fff;
+  text-shadow: 2px 2px 8px #000, 0 2px 6px #222;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  backdrop-filter: blur(2px);
+}
+
+.carousel-caption h5, .carousel-caption p {
+  color: #fff !important;
+  text-shadow: 2px 2px 8px #000, 0 2px 6px #222;
 }
 
 .carousel-caption h5 {
-  color: #000000;
   font-size: 2.5rem;
   font-weight: 700;
-  text-shadow: 2px 2px 4px rgb(255, 255, 255);
   margin-bottom: 1rem;
 }
 
 .carousel-caption p {
-  color: #000000;
   font-size: 1.5rem;
   font-weight: 600;
-  text-shadow: 2px 2px 4px rgb(255, 255, 255);
   line-height: 1.6;
 }
 
