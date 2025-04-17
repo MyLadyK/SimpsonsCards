@@ -29,9 +29,8 @@
         </li>
         <!-- Admin: only Home -->
         <li class="nav-item" *ngIf="isAdmin">
-          <a class="nav-link" (click)="goTo('/')">Home</a>
+          <a class="nav-link" (click)="goTo('/admin')">Dashboard</a>
         </li>
-        <!-- Profile: only Home, About Us, FAQ -->
         <!-- Ya gestionado arriba, no mostrar Profile si isAdmin -->
       </ul>
     </div>

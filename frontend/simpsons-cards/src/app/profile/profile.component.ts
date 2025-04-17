@@ -5,6 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
 import { CardService } from '../services/card.service';
 import { Card } from '../models/card';
+import { Router } from '@angular/router';
 
 // HeaderComponent eliminado de imports porque ya no se usa directamente aquí
 @Component({
@@ -26,6 +27,15 @@ export class ProfileComponent implements OnInit {
 
   private authService = inject(AuthService);
   private cardService = inject(CardService);
+  private router = inject(Router);
+
+  constructor() {
+    // Redirigir a dashboard si el usuario es admin (por username)
+    const user = this.authService.getUser();
+    if (user && user.username && user.username.toLowerCase() === 'admin') {
+      this.router.navigate(['/admin']);
+    }
+  }
 
   ngOnInit(): void {
     this.loadUserProfile();
