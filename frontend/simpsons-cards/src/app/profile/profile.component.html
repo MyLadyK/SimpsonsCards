@@ -1,6 +1,8 @@
+<!-- ELIMINADO: <app-header ...> duplicado, sólo debe ir en app.component.html global -->
+
 <div class="profile-container" *ngIf="!loading">
   <div class="profile-header">
-    <h2>{{ user?.username }}</h2>
+    <h2 class="simpsons-font">{{ user?.username }}</h2>
     <button class="logout-btn" (click)="logout()">Logout</button>
   </div>
 

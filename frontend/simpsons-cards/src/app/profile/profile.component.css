@@ -18,6 +18,14 @@
   font-size: 2.5rem;
 }
 
+.profile-header h2.simpsons-font {
+  color: #1976d2 !important;
+  text-shadow: 3px 3px 0 #fffde7, 5px 5px 0 #222;
+  font-family: 'Luckiest Guy', cursive;
+  letter-spacing: 1px;
+  font-size: 2.5rem;
+}
+
 .logout-btn {
   background-color: #dc3545;
   color: white;

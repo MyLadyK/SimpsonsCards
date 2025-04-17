@@ -6,6 +6,7 @@ import { AuthService } from '../services/auth.service';
 import { CardService } from '../services/card.service';
 import { Card } from '../models/card';
 
+// HeaderComponent eliminado de imports porque ya no se usa directamente aquí
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',

@@ -2,8 +2,10 @@
   <div class="text-center mt-5">
     <h1>Welcome to The Simpsons Cards</h1>
     <p class="lead">Join the world's most famous family in their daily adventures. Collect iconic moments, rare episodes, and exclusive character cards from The Simpsons universe.</p>
-    <button class="btn btn-primary" (click)="goToSignIn()">Sign In</button>
-    <button class="btn btn-outline-primary" (click)="goToSignUp()">Sign Up</button>
+    <button *ngIf="!isAuthenticated" class="btn btn-primary" (click)="goToSignIn()">Sign In</button>
+    <button *ngIf="!isAuthenticated" class="btn btn-outline-primary" (click)="goToSignUp()">Sign Up</button>
+    <button *ngIf="isAuthenticated" class="btn btn-success" (click)="router.navigate(['/profile'])">Ir a mi perfil</button>
+    <button *ngIf="isAuthenticated" class="btn btn-danger ms-2" (click)="logout()">Logout</button>
   </div>
 
   <!-- Carrusel de Bootstrap -->

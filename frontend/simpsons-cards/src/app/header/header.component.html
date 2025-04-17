@@ -1,0 +1,39 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary simpsons-navbar">
+  <div class="container-fluid">
+    <span class="navbar-brand simpsons-font" (click)="goTo('/')" style="cursor:pointer;">
+      Simpsons Shuffle
+    </span>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav ms-auto">
+        <!-- Home and About Us always visible -->
+        <li class="nav-item">
+          <a class="nav-link" (click)="goTo('/')">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" (click)="goTo('/about-us')">About Us</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" (click)="goTo('/faq')">FAQ</a>
+        </li>
+        <li class="nav-item" *ngIf="!isAuthenticated && !isAdmin && !isProfile">
+          <a class="nav-link" (click)="goTo('/sign-in')">Sign In</a>
+        </li>
+        <li class="nav-item" *ngIf="!isAuthenticated && !isAdmin && !isProfile">
+          <a class="nav-link" (click)="goTo('/sign-up')">Sign Up</a>
+        </li>
+        <li class="nav-item" *ngIf="isAuthenticated && !isAdmin && !isProfile">
+          <a class="nav-link" (click)="goTo('/profile')">Profile</a>
+        </li>
+        <!-- Admin: only Home -->
+        <li class="nav-item" *ngIf="isAdmin">
+          <a class="nav-link" (click)="goTo('/')">Home</a>
+        </li>
+        <!-- Profile: only Home, About Us, FAQ -->
+        <!-- Ya gestionado arriba, no mostrar Profile si isAdmin -->
+      </ul>
+    </div>
+  </div>
+</nav>

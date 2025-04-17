@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
+
+.simpsons-font {
+  font-family: 'Luckiest Guy', cursive;
+  letter-spacing: 1px;
+  color: #FFD600;
+  text-shadow: 2px 2px 0 #222, 4px 4px 0 #1976d2;
+  font-size: 2rem;
+  margin-bottom: 0;
+}
+
+@media (max-width: 600px) {
+  .simpsons-font {
+    font-size: 1.3rem;
+  }
+}

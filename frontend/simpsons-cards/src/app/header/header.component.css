@@ -1,0 +1,40 @@
+/* Simpsons-style navbar */
+.simpsons-navbar {
+  background: #FFD600 !important; /* Simpsons yellow */
+  border-bottom: 4px solid #1976d2; /* Simpsons blue */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+}
+
+.simpsons-font {
+  font-family: 'Luckiest Guy', cursive;
+  color: #1976d2;
+  text-shadow: 3px 3px 0 #fffde7, 5px 5px 0 #222;
+  letter-spacing: 1px;
+  font-size: 2rem;
+  margin-bottom: 0;
+  padding: 0 6px;
+}
+
+.navbar .navbar-brand.simpsons-font {
+  color: #1976d2 !important;
+  cursor: pointer;
+}
+
+.simpsons-navbar .navbar-nav .nav-link {
+  color: #222 !important;
+  font-weight: bold;
+  font-size: 1.1rem;
+  transition: color 0.2s, background 0.2s;
+  border-radius: 5px;
+  margin-right: 4px;
+}
+.simpsons-navbar .navbar-nav .nav-link:hover, .simpsons-navbar .navbar-nav .nav-link.active {
+  background: #1976d2;
+  color: #fff !important;
+}
+
+@media (max-width: 600px) {
+  .simpsons-font {
+    font-size: 1.3rem;
+  }
+}
