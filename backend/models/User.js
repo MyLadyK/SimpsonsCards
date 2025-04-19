@@ -152,11 +152,23 @@ class User {
    */
   async addToCollection(cardId) {
     try {
-      const [result] = await db.execute(
-        'INSERT INTO user_cards (user_id, card_id, obtained_at) VALUES (?, ?, NOW())',
+      // Cambia a lógica segura: si ya existe, haz UPDATE; si no, INSERT con quantity
+      const [existing] = await db.query(
+        'SELECT id, quantity FROM user_cards WHERE user_id = ? AND card_id = ?',
         [this.id, cardId]
       );
-      return result.affectedRows > 0;
+      if (existing.length > 0) {
+        await db.query(
+          'UPDATE user_cards SET quantity = quantity + 1 WHERE id = ?',
+          [existing[0].id]
+        );
+      } else {
+        await db.query(
+          'INSERT INTO user_cards (user_id, card_id, quantity, obtained_at) VALUES (?, ?, 1, NOW())',
+          [this.id, cardId]
+        );
+      }
+      return true;
     } catch (error) {
       console.error('Error adding card to collection:', error);
       throw error;

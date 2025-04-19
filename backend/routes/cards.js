@@ -70,11 +70,11 @@ router.get('/user', async (req, res) => {
     if (!req.user || !req.user.id) {
       return res.status(401).json({ message: 'Usuario no autenticado' });
     }
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ message: 'Usuario no encontrado' });
-    }
-    const cards = await user.getCollection();
+    // Consulta SQL directa para devolver las cartas con el campo quantity
+    const [cards] = await db.query(
+      `SELECT c.*, uc.quantity FROM cards c INNER JOIN user_cards uc ON c.id = uc.card_id WHERE uc.user_id = ?`,
+      [req.user.id]
+    );
     res.json(cards || []);
   } catch (error) {
     console.error('Error al obtener las cartas del usuario:', error);
@@ -243,9 +243,34 @@ router.post('/claim-cards', auth, async (req, res) => {
       return res.status(404).json({ message: 'No hay cartas disponibles en la base de datos' });
     }
     const selectedCards = getRandomCards(allCards, 4);
-    // Insertar las cartas reclamadas en user_cards (permitiendo repetidas)
-    const insertQueries = selectedCards.map(card => `(${req.user.id}, ${card.id})`).join(', ');
-    await db.query(`INSERT INTO user_cards (user_id, card_id) VALUES ${insertQueries}`);
+    // Agrupar las cartas seleccionadas por id y contar cuántas veces sale cada una
+    const cardCounts = {};
+    for (const card of selectedCards) {
+      cardCounts[card.id] = (cardCounts[card.id] || 0) + 1;
+    }
+    // Para cada carta única reclamada, incrementa quantity si ya existe, si no inserta nueva fila
+    for (const cardIdStr of Object.keys(cardCounts)) {
+      const cardId = parseInt(cardIdStr, 10);
+      const cantidad = cardCounts[cardId];
+      // ¿Ya existe?
+      const [existing] = await db.query(
+        'SELECT id, quantity FROM user_cards WHERE user_id = ? AND card_id = ?',
+        [req.user.id, cardId]
+      );
+      if (existing.length > 0) {
+        // Ya la tiene: suma la cantidad reclamada
+        await db.query(
+          'UPDATE user_cards SET quantity = quantity + ? WHERE id = ?',
+          [cantidad, existing[0].id]
+        );
+      } else {
+        // No la tiene: inserta nueva fila con la cantidad reclamada
+        await db.query(
+          'INSERT INTO user_cards (user_id, card_id, quantity, obtained_at) VALUES (?, ?, ?, ?)',
+          [req.user.id, cardId, cantidad, new Date()]
+        );
+      }
+    }
     // Actualizar el last claim time
     await db.query('UPDATE users SET last_cards_drawn = ? WHERE id = ?', [new Date(), req.user.id]);
     // Log único para depuración

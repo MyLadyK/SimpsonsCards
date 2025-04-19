@@ -7,6 +7,7 @@ export interface Card {
   image_url: string;
   description: string;
   rarity: CardRarity;
+  quantity?: number;
   created_at?: Date;
   updated_at?: Date;
 }

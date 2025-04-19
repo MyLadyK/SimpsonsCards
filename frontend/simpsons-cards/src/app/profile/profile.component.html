@@ -9,7 +9,7 @@
   <div class="profile-content">
     <div class="user-info">
       <h3>My Collection</h3>
-      <p>{{ cards.length }} cards in collection</p>
+      <p>{{ totalCards }} total cards <span *ngIf="repeatedCards > 0">({{ repeatedCards }} repeated)</span></p>
     </div>
 
     <div class="claim-section">
@@ -38,6 +38,43 @@
         <img [src]="card.image_url" [alt]="card.name" class="card-image">
         <div class="card-info">
           <h4>{{ card.name }}</h4>
+        </div>
+        <span class="card-quantity-badge simpsons-font" *ngIf="card.id !== undefined && cardQuantities[card.id] && cardQuantities[card.id] > 1">
+          x{{ cardQuantities[card.id] }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para cartas reclamadas -->
+  <div class="modal fade show card-modal" tabindex="-1" [ngStyle]="{ display: showClaimedModal ? 'block' : 'none', background: 'rgba(0,0,0,0.7)' }" *ngIf="showClaimedModal">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content claimed-modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title simpsons-font">¡Nuevas cartas reclamadas!</h5>
+          <button type="button" class="btn-close" (click)="closeClaimedModal()"></button>
+        </div>
+        <div class="modal-body claimed-modal-body">
+          <div class="claimed-cards-grid">
+            <div class="card-item claimed" *ngFor="let card of claimedCards">
+              <span class="rarity-badge" [ngClass]="{
+                'rarity-common': card.rarity === 'Common',
+                'rarity-uncommon': card.rarity === 'Uncommon',
+                'rarity-rare': card.rarity === 'Rare',
+                'rarity-epic': card.rarity === 'Epic',
+                'rarity-legendary': card.rarity === 'Legendary'
+              }">
+                {{ card.rarity }}
+              </span>
+              <img [src]="card.image_url" [alt]="card.name" class="card-image">
+              <div class="card-info">
+                <h4>{{ card.name }}</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary simpsons-font" (click)="closeClaimedModal()">Cerrar</button>
         </div>
       </div>
     </div>

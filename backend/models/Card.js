@@ -226,10 +226,22 @@ class Card {
    */
   async addToUser(userId) {
     try {
-      await db.execute(
-        'INSERT INTO user_cards (user_id, card_id) VALUES (?, ?)',
+      // Cambia a lógica segura: si ya existe, haz UPDATE; si no, INSERT con quantity
+      const [existing] = await db.query(
+        'SELECT id, quantity FROM user_cards WHERE user_id = ? AND card_id = ?',
         [userId, this.id]
       );
+      if (existing.length > 0) {
+        await db.query(
+          'UPDATE user_cards SET quantity = quantity + 1 WHERE id = ?',
+          [existing[0].id]
+        );
+      } else {
+        await db.query(
+          'INSERT INTO user_cards (user_id, card_id, quantity, obtained_at) VALUES (?, ?, 1, NOW())',
+          [userId, this.id]
+        );
+      }
     } catch (error) {
       console.error('Error adding card to user:', error);
       throw error;

@@ -19,11 +19,16 @@ import { Router } from '@angular/router';
 export class ProfileComponent implements OnInit {
   user: any | null = null;
   cards: Card[] = [];
+  cardQuantities: { [cardId: number]: number } = {};
   loading = true;
   showClaimError = false;
   showClaimSuccess = false;
   claimErrorMessage = '';
   selectedCard: any = null;
+  showClaimedModal = false;
+  claimedCards: Card[] = [];
+  totalCards: number = 0;
+  repeatedCards: number = 0;
 
   private authService = inject(AuthService);
   private cardService = inject(CardService);
@@ -67,24 +72,31 @@ export class ProfileComponent implements OnInit {
         };
       }
 
-      // Cargar las cartas del usuario
-      await this.loadUserCards();
-
-    } catch (error) {
-      console.error('Error loading profile:', error);
-      // Manejar el error según sea necesario
-    } finally {
+      // Cargar cartas del usuario (ahora incluyen quantity)
+      const cards = await this.cardService.getUserCards();
+      this.cards = cards;
+      // Mapear cantidades para acceso rápido (cast explícito a number)
+      this.cardQuantities = {};
+      let total = 0;
+      let repeated = 0;
+      for (const card of cards) {
+        const id = card.id as number;
+        const quantity = Number(card.quantity) > 0 ? Number(card.quantity) : 1;
+        if (id !== undefined) {
+          this.cardQuantities[id] = quantity;
+          total += quantity;
+          if (quantity > 1) {
+            repeated += quantity - 1;
+          }
+        }
+      }
+      this.totalCards = total;
+      this.repeatedCards = repeated;
       this.loading = false;
-    }
-  }
-
-  private async loadUserCards() {
-    try {
-      this.cards = await this.cardService.getUserCards();
-      console.log('Cards loaded:', this.cards);
-    } catch (error) {
-      console.error('Error loading user cards:', error);
-      this.cards = [];
+    } catch (error: any) {
+      this.loading = false;
+      this.showClaimError = true;
+      this.claimErrorMessage = error?.message || 'Error loading profile';
     }
   }
 
@@ -95,14 +107,16 @@ export class ProfileComponent implements OnInit {
       this.loading = true;
 
       const response = await this.cardService.claimCards();
-      
+
       if (response.message) {
         if (response.message === 'No available cards to claim') {
           this.showClaimError = true;
           this.claimErrorMessage = 'No hay cartas disponibles para reclamar';
         } else {
           this.showClaimSuccess = true;
-          this.cards = response.cards;
+          this.claimedCards = response.cards;
+          this.showClaimedModal = true;
+          await this.loadUserProfile();
         }
       }
     } catch (error) {
@@ -132,6 +146,11 @@ export class ProfileComponent implements OnInit {
 
   onCloseModal() {
     this.selectedCard = null;
+  }
+
+  closeClaimedModal() {
+    this.showClaimedModal = false;
+    this.claimedCards = [];
   }
 
   logout() {
