@@ -82,7 +82,7 @@
                   <input [(ngModel)]="newCard.character_name" name="character_name" required class="form-control" placeholder="Character" />
                 </div>
                 <div class="col-md-3">
-                  <input [(ngModel)]="newCard.image_url" name="image_url" required class="form-control" placeholder="Image URL" />
+                  <input type="file" (change)="onImageSelected($event)" accept="image/*" class="form-control" required />
                 </div>
                 <div class="col-md-3">
                   <select [(ngModel)]="newCard.rarity" name="rarity" required class="form-select">
@@ -115,6 +115,7 @@
                   <th>Name</th>
                   <th>Character</th>
                   <th>Rarity</th>
+                  <th>Description</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -146,6 +147,10 @@
                       <option value="Epic">Epic</option>
                       <option value="Legendary">Legendary</option>
                     </select>
+                  </td>
+                  <td *ngIf="editCardId !== card.id">{{ card.description }}</td>
+                  <td *ngIf="editCardId === card.id && editCard">
+                    <textarea [(ngModel)]="editCard.description" class="form-control form-control-sm"></textarea>
                   </td>
                   <td>
                     <button *ngIf="editCardId !== card.id" class="btn btn-primary btn-sm me-1" (click)="startEditCard(card)">
@@ -180,13 +185,13 @@
         <button type="button" class="btn-close" aria-label="Close" (click)="closeImageModal()"></button>
       </div>
       <div class="modal-body text-center">
-        <img [src]="imageModalUrl" [alt]="imageModalTitle" style="max-width: 100%; max-height: 400px;" />
-        <div class="mt-3">
-          <label for="descEdit" class="form-label">Description</label>
-          <textarea id="descEdit" [(ngModel)]="modalDescription" class="form-control" rows="4"></textarea>
+        <img [src]="imageModalUrl" [alt]="imageModalTitle" class="img-fluid mb-3" style="max-height: 320px; object-fit: contain;" />
+        <div class="mb-2">
+          <p>{{ modalDescription }}</p>
         </div>
-        <button class="btn btn-success mt-2" (click)="saveModalDescription()">Save Description</button>
-        <div *ngIf="modalDescSaved" class="text-success mt-2">Description updated!</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeImageModal()">Close</button>
       </div>
     </div>
   </div>

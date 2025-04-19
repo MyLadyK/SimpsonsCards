@@ -56,14 +56,14 @@ export class AdminService {
 
   /**
    * Creates a new card
-   * @param card The card data to create
+   * @param card The card data to create (FormData)
    * @returns Observable containing the created card
    * @throws Error if creation fails
    * @see /admin/cards
    */
-  addCard(card: Card): Observable<Card> {
+  addCard(card: FormData): Observable<Card> {
     return this.http.post<Card>(`${environment.apiUrl}/api/admin/cards`, card, {
-      headers: this.getAuthHeaders()
+      headers: this.getAuthHeaders(false) // No content-type para FormData
     });
   }
 
@@ -93,10 +93,18 @@ export class AdminService {
     });
   }
 
-  private getAuthHeaders(): HttpHeaders {
+  /**
+   * Returns HTTP headers with auth token
+   * @param isJson Whether to set Content-Type as application/json
+   */
+  private getAuthHeaders(isJson = true): HttpHeaders {
     const token = this.authService.getToken();
-    return new HttpHeaders({
-      Authorization: token ? `Bearer ${token}` : ''
+    let headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
     });
+    if (isJson) {
+      headers = headers.set('Content-Type', 'application/json');
+    }
+    return headers;
   }
 }

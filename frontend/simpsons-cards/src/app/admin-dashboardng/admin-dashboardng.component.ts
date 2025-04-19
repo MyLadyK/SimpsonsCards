@@ -32,15 +32,16 @@ export class AdminDashboardngComponent implements OnInit {
   modalCardId: number | null = null;
   modalDescSaved: boolean = false;
   showAddCardForm = false;
-  newCard: Card = {
+  newCard: Partial<Card> = {
     name: '',
     character_name: '',
-    image_url: '',
     description: '',
-    rarity: 'Common'
+    rarity: 'Common',
+    image_url: ''
   };
   addCardSuccess = false;
   addCardError: string | null = null;
+  imageFile: File | null = null;
 
   constructor(
     private adminService: AdminService,
@@ -198,28 +199,43 @@ export class AdminDashboardngComponent implements OnInit {
     this.addCardSuccess = false;
     this.addCardError = null;
     if (this.showAddCardForm) {
-      this.newCard = {
-        name: '',
-        character_name: '',
-        image_url: '',
-        description: '',
-        rarity: 'Common'
-      };
+      this.newCard = { name: '', character_name: '', description: '', rarity: 'Common', image_url: '' };
+    }
+  }
+
+  onImageSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.imageFile = input.files[0];
+    } else {
+      this.imageFile = null;
     }
   }
 
   addCard() {
-    this.addCardSuccess = false;
-    this.addCardError = null;
-    this.adminService.addCard(this.newCard).subscribe({
-      next: () => {
+    if (!this.imageFile) {
+      this.addCardError = 'Debes seleccionar una imagen';
+      return;
+    }
+    const formData = new FormData();
+    formData.append('name', this.newCard.name ?? '');
+    formData.append('character_name', this.newCard.character_name ?? '');
+    formData.append('description', this.newCard.description ?? '');
+    formData.append('rarity', this.newCard.rarity ?? 'Common');
+    formData.append('image', this.imageFile);
+
+    this.adminService.addCard(formData).subscribe({
+      next: (card) => {
         this.addCardSuccess = true;
+        this.addCardError = null;
+        this.showAddCardForm = false;
+        this.newCard = { name: '', character_name: '', description: '', rarity: 'Common', image_url: '' };
+        this.imageFile = null;
         this.loadCards();
-        this.toggleAddCardForm();
       },
-      error: (error) => {
-        console.error('Error adding card:', error);
-        this.addCardError = 'Error adding card';
+      error: (err) => {
+        this.addCardError = err.error?.message || 'Error adding card';
+        this.addCardSuccess = false;
       }
     });
   }
