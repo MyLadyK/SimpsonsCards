@@ -2,8 +2,10 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { CardService } from '../services/card.service';
+import { ExchangeService } from '../services/exchange.service';
 import { Card } from '../models/card';
 import { Router } from '@angular/router';
 
@@ -12,7 +14,7 @@ import { Router } from '@angular/router';
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
-  imports: [CommonModule, RouterModule, HttpClientModule],
+  imports: [CommonModule, RouterModule, HttpClientModule, FormsModule],
   standalone: true,
   providers: [CardService]
 })
@@ -29,9 +31,14 @@ export class ProfileComponent implements OnInit {
   claimedCards: Card[] = [];
   totalCards: number = 0;
   repeatedCards: number = 0;
+  showOfferModal = false;
+  offerCard: Card | null = null;
+  offerMinRarity: string = 'Common';
+  rarities = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary'];
 
   private authService = inject(AuthService);
   private cardService = inject(CardService);
+  private exchangeService = inject(ExchangeService);
   private router = inject(Router);
 
   constructor() {
@@ -74,12 +81,17 @@ export class ProfileComponent implements OnInit {
 
       // Cargar cartas del usuario (ahora incluyen quantity)
       const cards = await this.cardService.getUserCards();
-      this.cards = cards;
+      // Asegura que cada carta tenga user_card_id y owner_id
+      this.cards = cards.map(card => ({
+        ...card,
+        user_card_id: card.user_card_id ?? card.id,
+        owner_id: this.user?.id
+      }));
       // Mapear cantidades para acceso rápido (cast explícito a number)
       this.cardQuantities = {};
       let total = 0;
       let repeated = 0;
-      for (const card of cards) {
+      for (const card of this.cards) {
         const id = card.id as number;
         const quantity = Number(card.quantity) > 0 ? Number(card.quantity) : 1;
         if (id !== undefined) {
@@ -151,6 +163,38 @@ export class ProfileComponent implements OnInit {
   closeClaimedModal() {
     this.showClaimedModal = false;
     this.claimedCards = [];
+  }
+
+  openOfferModal(card: Card, event: MouseEvent) {
+    event.stopPropagation();
+    this.offerCard = card;
+    this.offerMinRarity = card.rarity;
+    this.showOfferModal = true;
+  }
+
+  closeOfferModal() {
+    this.showOfferModal = false;
+    this.offerCard = null;
+    this.offerMinRarity = 'Common';
+  }
+
+  confirmOffer() {
+    if (!this.offerCard) return;
+    // Usar user_card_id si existe, si no, id
+    const user_card_id = this.offerCard.user_card_id || this.offerCard.id;
+    if (!user_card_id) {
+      alert('No se pudo identificar la carta a ofrecer');
+      return;
+    }
+    this.exchangeService.createOffer(user_card_id, this.offerMinRarity).subscribe({
+      next: () => {
+        this.closeOfferModal();
+        alert('Oferta publicada en el mercado de intercambios');
+      },
+      error: (err) => {
+        alert(err?.error?.message || 'Error al publicar la oferta');
+      }
+    });
   }
 
   logout() {

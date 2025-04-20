@@ -8,6 +8,8 @@ export interface Card {
   description: string;
   rarity: CardRarity;
   quantity?: number;
+  user_card_id?: number; // ID en user_cards
+  owner_id?: number; // ID del propietario (usuario)
   created_at?: Date;
   updated_at?: Date;
 }

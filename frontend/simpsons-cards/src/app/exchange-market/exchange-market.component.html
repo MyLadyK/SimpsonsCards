@@ -1,0 +1,84 @@
+<div class="container mt-4">
+  <h2 class="simpsons-font mb-4">Exchange Market</h2>
+  <button class="btn btn-success mb-3" (click)="openCreate()">Offer a Card</button>
+
+  <div *ngIf="showCreate" class="card mb-4 p-3">
+    <h5>Offer a Card for Exchange</h5>
+    <div class="row g-2 align-items-end">
+      <div class="col-md-6">
+        <label>Select one of your cards:</label>
+        <select [(ngModel)]="selectedCardId" class="form-select">
+          <option [ngValue]="null">Choose card...</option>
+          <option *ngFor="let card of myCards" [ngValue]="card.user_card_id">{{ card.name }} ({{ card.character_name }}) - {{ card.rarity }}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label>Minimum rarity accepted:</label>
+        <select [(ngModel)]="minRarity" class="form-select">
+          <option *ngFor="let r of rarities" [value]="r">{{ r }}</option>
+        </select>
+      </div>
+      <div class="col-md-2 text-end">
+        <button class="btn btn-primary" (click)="createOffer()" [disabled]="!selectedCardId">Publish</button>
+        <button class="btn btn-secondary ms-2" (click)="closeCreate()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="text-center my-4">
+    <div class="spinner-border"></div>
+  </div>
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+  <table class="table table-striped" *ngIf="offers.length">
+    <thead>
+      <tr>
+        <th>Card</th>
+        <th>Owner</th>
+        <th>Min. Rarity</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let offer of offers">
+        <td>
+          <img [src]="offer.image_url" alt="" style="width:48px; height:48px; object-fit:cover; margin-right:8px;">
+          <span>{{ offer.name }} ({{ offer.character_name }}) - {{ offer.rarity }}</span>
+        </td>
+        <td>{{ offer.username }}</td>
+        <td>{{ offer.min_rarity }}</td>
+        <td>
+          <button class="btn btn-primary btn-sm"
+                  [disabled]="!canRequest(offer)"
+                  (click)="openRequestModal(offer)">Request</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div *ngIf="!offers.length && !loading" class="text-center text-muted">No exchange offers available.</div>
+
+  <!-- Modal para solicitar intercambio -->
+  <div class="modal fade show" tabindex="-1" style="display:block; background:rgba(0,0,0,0.4)" *ngIf="requestingOffer">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Select a card to offer</h5>
+          <button type="button" class="btn-close" (click)="closeRequestModal()"></button>
+        </div>
+        <div class="modal-body">
+          <label>Select one of your cards (min. rarity: {{ requestingOffer.min_rarity }}):</label>
+          <select class="form-select" [(ngModel)]="selectedRequestCardId">
+            <option [ngValue]="null">Choose card...</option>
+            <option *ngFor="let card of validRequestCards" [ngValue]="card.user_card_id">
+              {{ card.name }} ({{ card.character_name }}) - {{ card.rarity }}
+            </option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" (click)="confirmRequest()" [disabled]="!selectedRequestCardId">Send Request</button>
+          <button class="btn btn-secondary" (click)="closeRequestModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

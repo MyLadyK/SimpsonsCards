@@ -27,6 +27,9 @@
         <li class="nav-item" *ngIf="isAuthenticated && !isAdmin && !isProfile">
           <a class="nav-link" (click)="goTo('/profile')">Profile</a>
         </li>
+        <li class="nav-item" *ngIf="isAuthenticated && !isAdmin && !isProfile">
+          <a class="nav-link" (click)="goTo('/exchanges')">Exchange Market</a>
+        </li>
         <!-- Admin: only Home -->
         <li class="nav-item" *ngIf="isAdmin">
           <a class="nav-link" (click)="goTo('/admin')">Dashboard</a>

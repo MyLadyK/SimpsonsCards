@@ -44,6 +44,7 @@ const auth = require('./middleware/auth');
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/cards', auth, require('./routes/cards'));
 app.use('/api/admin', auth, require('./routes/admin'));
+app.use('/api/exchanges', auth, require('./routes/exchanges'));
 
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {

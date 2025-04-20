@@ -118,24 +118,46 @@ export class AuthService {
   }
 
   /**
+   * Returns the current user object from the JWT token (if available)
+   */
+  getUser(): any {
+    const token = this.getToken();
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.user || payload;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Returns the current user's ID (if logged in)
+   */
+  getUserId(): number | null {
+    const user = this.getUser();
+    return user && user.id ? user.id : null;
+  }
+
+  /**
    * Parses and returns the user data from the JWT token
    * @returns Parsed user data or null if no token exists
    * @throws Error if token parsing fails
    * @private
    */
-  getUser(): any {
-    const token = this.getToken();
-    if (!token) return null;
+  // getUser(): any {
+  //   const token = this.getToken();
+  //   if (!token) return null;
 
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      return JSON.parse(window.atob(base64));
-    } catch (error) {
-      console.error('Error parsing token:', error);
-      return null;
-    }
-  }
+  //   try {
+  //     const base64Url = token.split('.')[1];
+  //     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  //     return JSON.parse(window.atob(base64));
+  //   } catch (error) {
+  //     console.error('Error parsing token:', error);
+  //     return null;
+  //   }
+  // }
 
   /**
    * Validates the stored JWT token

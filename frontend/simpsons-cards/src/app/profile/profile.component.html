@@ -42,6 +42,7 @@
         <span class="card-quantity-badge simpsons-font" *ngIf="card.id !== undefined && cardQuantities[card.id] && cardQuantities[card.id] > 1">
           x{{ cardQuantities[card.id] }}
         </span>
+        <button class="btn btn-warning btn-sm mt-2 w-100" (click)="openOfferModal(card, $event)">Ofrecer en intercambio</button>
       </div>
     </div>
   </div>
@@ -75,6 +76,29 @@
         </div>
         <div class="modal-footer">
           <button class="btn btn-primary simpsons-font" (click)="closeClaimedModal()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para ofrecer carta en intercambio -->
+  <div class="modal fade show" tabindex="-1" [ngStyle]="{ display: showOfferModal ? 'block' : 'none', background: 'rgba(0,0,0,0.7)' }" *ngIf="showOfferModal">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Ofrecer carta en intercambio</h5>
+          <button type="button" class="btn-close" (click)="closeOfferModal()"></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>{{ offerCard?.name }}</strong> ({{ offerCard?.character_name }}) - {{ offerCard?.rarity }}</p>
+          <label>Rareza mínima aceptada:</label>
+          <select class="form-select" [(ngModel)]="offerMinRarity">
+            <option *ngFor="let r of rarities" [value]="r">{{ r }}</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="closeOfferModal()">Cancelar</button>
+          <button class="btn btn-primary" (click)="confirmOffer()">Ofrecer</button>
         </div>
       </div>
     </div>

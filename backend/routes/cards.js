@@ -70,9 +70,9 @@ router.get('/user', async (req, res) => {
     if (!req.user || !req.user.id) {
       return res.status(401).json({ message: 'Usuario no autenticado' });
     }
-    // Consulta SQL directa para devolver las cartas con el campo quantity
+    // Consulta SQL directa para devolver las cartas con el campo quantity y user_card_id
     const [cards] = await db.query(
-      `SELECT c.*, uc.quantity FROM cards c INNER JOIN user_cards uc ON c.id = uc.card_id WHERE uc.user_id = ?`,
+      `SELECT c.*, uc.quantity, uc.id AS user_card_id FROM cards c INNER JOIN user_cards uc ON c.id = uc.card_id WHERE uc.user_id = ?`,
       [req.user.id]
     );
     res.json(cards || []);

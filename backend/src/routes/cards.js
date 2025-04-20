@@ -11,7 +11,7 @@ router.get('/user', auth, async (req, res) => {
     const [userCards] = await db.query('SELECT * FROM user_cards WHERE user_id = ?', [req.user.id]);
     console.log('DEBUG_BACKEND - user_cards para user_id', req.user.id, ':', userCards);
 
-    const sql = `SELECT c.*, uc.quantity FROM cards c INNER JOIN user_cards uc ON c.id = uc.card_id WHERE uc.user_id = ?`;
+    const sql = `SELECT c.*, uc.quantity, uc.id AS user_card_id FROM cards c INNER JOIN user_cards uc ON c.id = uc.card_id WHERE uc.user_id = ?`;
     console.log('DEBUG_BACKEND - Consulta SQL:', sql, 'userId:', req.user.id);
     const [cards] = await db.query(sql, [req.user.id]);
     console.log('DEBUG_BACKEND - Resultado crudo de MySQL:', cards);
