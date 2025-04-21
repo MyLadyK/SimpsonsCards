@@ -158,18 +158,24 @@ router.post('/:id/cancel', async (req, res) => {
   }
 });
 
-// Get all exchange requests made by the authenticated user
+// Get all exchange requests made by the authenticated user (optionally include archived)
 // GET /api/exchanges/requests/mine
 router.get('/requests/mine', async (req, res) => {
   try {
     const userId = req.user.id;
+    const includeArchived = req.query.includeArchived === 'true';
+    const archivedClause = includeArchived ? '' : 'AND er.archived = 0';
     const [requests] = await db.execute(
-      `SELECT er.*, eo.card_id AS offer_card_id, c.name AS card_name, c.character_name, c.image_url, c.rarity, eo.user_id AS offer_owner_id, eo.min_rarity
+      `SELECT er.*, eo.card_id AS offer_card_id, c.name AS card_name, c.character_name, c.image_url, c.rarity, eo.user_id AS offer_owner_id, eo.min_rarity, eo.id AS offer_id, eo.user_id AS offer_owner_id, u.username AS offer_owner_username,
+        c2.name AS offer_card_name, c2.character_name AS offer_card_character_name, c2.image_url AS offer_card_image_url, c2.rarity AS offer_card_rarity
        FROM exchange_requests er
        JOIN exchange_offers eo ON er.exchange_offer_id = eo.id
        JOIN user_cards uc ON er.offered_card_id = uc.id
        JOIN cards c ON uc.card_id = c.id
-       WHERE er.user_id = ?
+       JOIN user_cards uc2 ON eo.card_id = uc2.id
+       JOIN cards c2 ON uc2.card_id = c2.id
+       JOIN users u ON eo.user_id = u.id
+       WHERE er.user_id = ? ${archivedClause}
        ORDER BY er.created_at DESC`,
       [userId]
     );
@@ -204,6 +210,24 @@ router.get('/:offerId/requests', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Error fetching requests for offer' });
+  }
+});
+
+// Archive an exchange request (instead of deleting)
+// POST /api/exchanges/requests/:id/archive
+router.post('/requests/:id/archive', async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const requestId = req.params.id;
+    // Only the owner of the request can archive it
+    const [requests] = await db.execute('SELECT * FROM exchange_requests WHERE id = ?', [requestId]);
+    if (requests.length === 0) return res.status(404).json({ message: 'Request not found' });
+    if (requests[0].user_id !== userId) return res.status(403).json({ message: 'Not your request' });
+    await db.execute('UPDATE exchange_requests SET archived = 1 WHERE id = ?', [requestId]);
+    res.json({ message: 'Request archived' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error archiving request' });
   }
 });
 

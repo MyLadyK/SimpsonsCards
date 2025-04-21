@@ -15,6 +15,7 @@ A web application for managing a collection of Simpsons character cards. Users c
 - **Manual Request Management:** Remove accepted or rejected exchange requests from your profile manually
 - **Navigation:** Quick access to About Us and FAQ sections from the main menu
 - **Full English UI:** All user-facing text, documentation, and comments are in English
+- **Exchange History:** Collapsible section in the user profile that displays all accepted, rejected, and archived requests along with the card you received and the user you traded with. Requests are archived instead of deleted for full traceability.
 
 ## Tech Stack
 
@@ -111,6 +112,18 @@ SimpsonsCards/
 | status            | VARCHAR(20) | pending/accepted/rejected    |
 | created_at        | TIMESTAMP   | Request creation timestamp   |
 
+#### exchange_requests
+| Column            | Type        | Description                  |
+|-------------------|-------------|------------------------------|
+| id                | INT         | Primary key                  |
+| exchange_offer_id | INT         | Foreign key to exchange_offers|
+| user_id           | INT         | Requesting user (foreign key to users) |
+| offered_card_id   | INT         | Card offered by the user (foreign key to user_cards) |
+| status            | ENUM        | 'pending', 'accepted', 'rejected'      |
+| archived          | TINYINT(1)  | 1 if archived, 0 if active   |
+| created_at        | TIMESTAMP   | Request creation timestamp   |
+| updated_at        | TIMESTAMP   | Last update timestamp        |
+
 ## API Endpoints (Main)
 
 ### Authentication
@@ -134,11 +147,8 @@ SimpsonsCards/
 - POST `/exchanges` - Create a new offer
 - GET `/exchanges/:id` - Get offer details
 - POST `/exchanges/:offerId/request` - Request an exchange for an offer
-- GET `/exchanges/requests` - View your outgoing requests
-- GET `/exchanges/received` - View incoming requests for your offers
-- POST `/exchanges/:offerId/accept/:requestId` - Accept a request
-- POST `/exchanges/:offerId/reject/:requestId` - Reject a request
-- DELETE `/exchanges/requests/:requestId` - Remove a request (accepted/rejected)
+- GET `/exchanges/requests/mine` - View your outgoing requests (add `?includeArchived=true` to see archived)
+- POST `/exchanges/requests/:id/archive` - Archive an accepted or rejected request
 
 ### Admin
 - GET `/admin/users` - Get all users

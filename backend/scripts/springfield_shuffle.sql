@@ -37,14 +37,14 @@ CREATE TABLE IF NOT EXISTS user_cards (
 
 -- Insert initial cards data
 INSERT INTO cards (name, character_name, image_url, description, rarity) VALUES
-('Homer Simpson - Space', 'Homer Simpson', '/assets/homer/space_homer.jpg', 'Homer in space', 'Common'),
-('Homer Simpson - No Beer No TV', 'Homer Simpson', '/assets/homer/no_beer_no_tv.jpg', 'Homer with no beer and no TV', 'Uncommon'),
-('Homer Simpson - NY Bills', 'Homer Simpson', '/assets/homer/ny_bills.jpg', 'Homer wearing NY Bills jersey', 'Rare'),
-('Bart Simpson - Naked', 'Bart Simpson', '/assets/bart/naked_bart.jpg', 'Bart without pants', 'Common'),
-('Lisa Simpson - Loser', 'Lisa Simpson', '/assets/lisa/loser_lisa.jpg', 'Lisa playing saxophone', 'Uncommon'),
-('Lisa Simpson - Cool', 'Lisa Simpson', '/assets/lisa/cool_lisa.png', 'Lisa looking cool', 'Rare'),
-('Marge Simpson - Mayor', 'Marge Simpson', '/assets/marge/mayor_marge.jpg', 'Marge as mayor', 'Common'),
-('Marge Simpson - Witch', 'Marge Simpson', '/assets/marge/witch_marge.jpg', 'Marge as a witch', 'Uncommon'),
-('Maggie Simpson - Violent', 'Maggie Simpson', '/assets/maggie/violent_maggie.jpg', 'Maggie being violent', 'Rare'),
-('Bart Simpson - Snake', 'Bart Simpson', '/assets/iconic_moments/barts_snake.jpg', 'Bart and the snake', 'Legendary'),
-('The Stonecutters', 'Iconic Moment', '/assets/iconic_moments/the_stonecutters.jpg', 'The Stonecutters reveal themselves', 'Legendary');
+('Homer Simpson - Space', 'Homer Simpson', '/assets/homer/space_homer.jpg', 'Homer in his space suit, ready to travel to the stars.', 'Common'),
+('Homer Simpson - No Beer No TV', 'Homer Simpson', '/assets/homer/no_beer_no_tv.jpg', 'Homer at his most desperate: without beer or television.', 'Uncommon'),
+('Homer Simpson - NY Bills', 'Homer Simpson', '/assets/homer/ny_bills.jpg', 'Homer showing his fandom for the Buffalo Bills.', 'Rare'),
+('Bart Simpson - Naked', 'Bart Simpson', '/assets/bart/naked_bart.jpg', 'Bart in his most natural state.', 'Common'),
+('Lisa Simpson - Loser', 'Lisa Simpson', '/assets/lisa/loser_lisa.jpg', 'Lisa at her most vulnerable moment.', 'Uncommon'),
+('Lisa Simpson - Cool', 'Lisa Simpson', '/assets/lisa/cool_lisa.png', 'Lisa showing her most rebellious side.', 'Rare'),
+('Marge Simpson - Mayor', 'Marge Simpson', '/assets/marge/mayor_marge.jpg', 'Marge as Springfield\'s mayor.', 'Common'),
+('Marge Simpson - Witch', 'Marge Simpson', '/assets/marge/witch_marge.jpg', 'Marge transformed into a witch for Halloween.', 'Uncommon'),
+('Maggie Simpson - Violent', 'Maggie Simpson', '/assets/maggie/violent_maggie.jpg', 'Maggie showing her most dangerous side.', 'Rare'),
+('Bart Simpson - Snake', 'Bart Simpson', '/assets/iconic_moments/barts_snake.jpg', 'The iconic moment where Bart is attacked by a snake.', 'Legendary'),
+('The Stonecutters', 'Iconic Moment', '/assets/iconic_moments/the_stonecutters.jpg', 'The Stonecutters at their secret meeting.', 'Legendary');

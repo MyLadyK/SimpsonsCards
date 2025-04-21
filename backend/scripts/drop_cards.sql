@@ -1,9 +1,9 @@
--- Primero eliminamos la tabla user_cards que tiene una foreign key a cards
+-- First, remove the user_cards table which has a foreign key to cards
 DROP TABLE IF EXISTS user_cards;
 
--- Luego eliminamos la tabla cards
+-- Then remove the cards table
 DROP TABLE IF EXISTS cards;
 
--- Verificamos que las tablas se hayan eliminado
+-- Verify that the tables have been removed
 SELECT 'user_cards' as table_name, COUNT(*) as count FROM user_cards UNION ALL
 SELECT 'cards', COUNT(*) FROM cards;

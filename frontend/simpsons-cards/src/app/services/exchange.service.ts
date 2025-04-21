@@ -46,12 +46,17 @@ export class ExchangeService {
   }
 
   // Get all requests made by the authenticated user
-  getMyRequests() {
-    return this.http.get<any[]>(`${this.apiUrl}/requests/mine`);
+  getMyRequests(includeArchived: boolean = false) {
+    return this.http.get<any[]>(`${this.apiUrl}/requests/mine${includeArchived ? '?includeArchived=true' : ''}`);
   }
 
   // Get all requests for a specific offer (only owner)
   getRequestsForOffer(offerId: number) {
     return this.http.get<any[]>(`${this.apiUrl}/${offerId}/requests`);
+  }
+
+  // Archive a request by ID
+  archiveRequest(requestId: number) {
+    return this.http.post(`${this.apiUrl}/requests/${requestId}/archive`, {});
   }
 }

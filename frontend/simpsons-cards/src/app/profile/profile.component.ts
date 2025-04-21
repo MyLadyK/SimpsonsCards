@@ -36,6 +36,9 @@ export class ProfileComponent implements OnInit {
   offerMinRarity: string = 'Common';
   rarities = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary'];
   myRequests: any[] = [];
+  archivedRequests: any[] = [];
+  archivedRequestsLoaded = false;
+  showExchangeHistory = false;
 
   private authService = inject(AuthService);
   private cardService = inject(CardService);
@@ -216,8 +219,33 @@ export class ProfileComponent implements OnInit {
     window.location.href = '/sign-in';
   }
 
-  removeRequest(index: number) {
-    // Remove a request from the myRequests array visually
-    this.myRequests.splice(index, 1);
+  async removeRequest(index: number) {
+    const req = this.myRequests[index];
+    if (!req) return;
+    try {
+      await this.exchangeService.archiveRequest(req.id).toPromise();
+      this.myRequests.splice(index, 1);
+    } catch (error) {
+      console.error('Error archiving request:', error);
+      // Optionally show a message to the user
+    }
+  }
+
+  async loadArchivedRequests() {
+    try {
+      const result = await this.exchangeService.getMyRequests(true).toPromise();
+      this.archivedRequests = (result ?? []).filter(r => r.archived);
+    } catch (error) {
+      console.error('Error loading archived requests:', error);
+      this.archivedRequests = [];
+    }
+  }
+
+  toggleExchangeHistory() {
+    this.showExchangeHistory = !this.showExchangeHistory;
+    if (this.showExchangeHistory && !this.archivedRequestsLoaded) {
+      this.loadArchivedRequests();
+      this.archivedRequestsLoaded = true;
+    }
   }
 }

@@ -1,8 +1,8 @@
--- Primero eliminamos todas las tablas relacionadas
+-- Remove all related tables first
 DROP TABLE IF EXISTS user_cards;
 DROP TABLE IF EXISTS cards;
 
--- Creamos la tabla cards
+-- Create the cards table
 CREATE TABLE IF NOT EXISTS cards (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS cards (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Creamos la tabla user_cards
+-- Create the user_cards table
 CREATE TABLE IF NOT EXISTS user_cards (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -25,16 +25,31 @@ CREATE TABLE IF NOT EXISTS user_cards (
     UNIQUE KEY unique_user_card (user_id, card_id)
 );
 
--- Insertamos los datos iniciales
+-- Exchange requests table
+CREATE TABLE IF NOT EXISTS exchange_requests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    exchange_offer_id INT NOT NULL,
+    user_id INT NOT NULL,
+    offered_card_id INT NOT NULL,
+    status ENUM('pending', 'accepted', 'rejected') NOT NULL DEFAULT 'pending',
+    archived TINYINT(1) NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (exchange_offer_id) REFERENCES exchange_offers(id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (offered_card_id) REFERENCES user_cards(id)
+);
+
+-- Insert initial cards
 INSERT INTO cards (name, character_name, image_url, description, rarity) VALUES
-('Homer Simpson - Space', 'Homer Simpson', '/assets/homer/space_homer.jpg', 'Homer Simpson en su traje espacial, listo para viajar a las estrellas. Esta icónica imagen muestra a Homer en su momento más heroico, aunque probablemente no sepa cómo usar el control de la nave.', 'Common'),
-('Homer Simpson - No Beer No TV', 'Homer Simpson', '/assets/homer/no_beer_no_tv.jpg', 'Homer Simpson en su estado más desesperado: sin cerveza ni televisión. Esta carta muestra a Homer en su sofá, con cara de tristeza y una mirada vacía, reflejando su dependencia de las dos cosas que más ama en la vida.', 'Uncommon'),
-('Homer Simpson - NY Bills', 'Homer Simpson', '/assets/homer/ny_bills.jpg', 'Homer Simpson mostrando su fanatismo por los Buffalo Bills. Aunque no es el equipo más exitoso de la NFL, Homer mantiene su lealtad inquebrantable, incluso cuando el equipo está en su peor momento.', 'Rare'),
-('Bart Simpson - Naked', 'Bart Simpson', '/assets/bart/naked_bart.jpg', 'Bart Simpson en su estado más natural. Esta carta muestra a Bart desnudo, corriendo por Springfield con su característica risa y una expresión de total despreocupación.', 'Common'),
-('Lisa Simpson - Loser', 'Lisa Simpson', '/assets/lisa/loser_lisa.jpg', 'Lisa Simpson en su momento más vulnerable. Aunque es la más inteligente de la familia, incluso ella tiene sus momentos de duda y frustración. Esta carta muestra a Lisa en un momento de reflexión.', 'Uncommon'),
-('Lisa Simpson - Cool', 'Lisa Simpson', '/assets/lisa/cool_lisa.png', 'Lisa Simpson mostrando su lado más rebelde. Con gafas de sol y una actitud despreocupada, esta carta muestra a Lisa disfrutando de la vida y rompiendo sus propias reglas por una vez.', 'Rare'),
-('Marge Simpson - Mayor', 'Marge Simpson', '/assets/marge/mayor_marge.jpg', 'Marge Simpson en su papel como alcaldesa de Springfield. Con su característico peinado azul y un traje de poder, esta carta muestra a Marge enfrentando los desafíos de gobernar una ciudad llena de personajes excéntricos.', 'Common'),
-('Marge Simpson - Witch', 'Marge Simpson', '/assets/marge/witch_marge.jpg', 'Marge Simpson transformada en bruja durante Halloween. Con un sombrero puntiagudo y una varita mágica, esta carta muestra a Marge en uno de los episodios más memorables de la serie.', 'Uncommon'),
-('Maggie Simpson - Violent', 'Maggie Simpson', '/assets/maggie/violent_maggie.jpg', 'Maggie Simpson mostrando su lado más peligroso. Aunque parece una bebé indefensa, Maggie tiene una fuerza sorprendente y no duda en usar su chupete como arma cuando es necesario.', 'Rare'),
-('Bart Simpson - Snake', 'Bart Simpson', '/assets/iconic_moments/barts_snake.jpg', 'El momento icónico donde Bart Simpson es atacado por una serpiente. Esta carta muestra la escena que se convirtió en uno de los momentos más memorables de la serie, con Bart gritando mientras la serpiente lo persigue.', 'Legendary'),
-('The Stonecutters', 'Iconic Moment', '/assets/iconic_moments/the_stonecutters.jpg', 'Los Stonecutters en su reunión secreta. Esta carta muestra a Homer descubriendo la sociedad secreta más poderosa de Springfield, con todos los miembros usando máscaras y mantos ceremoniales.', 'Legendary');
+('Homer Simpson - Space', 'Homer Simpson', '/assets/homer/space_homer.jpg', 'Homer Simpson in his space suit, ready to travel to the stars. This iconic image shows Homer at his most heroic moment, although he probably doesn\'t know how to use the spaceship controls.', 'Common'),
+('Homer Simpson - No Beer No TV', 'Homer Simpson', '/assets/homer/no_beer_no_tv.jpg', 'Homer Simpson at his most desperate: without beer or television. This card shows Homer on his couch, looking sad and empty-eyed, reflecting his dependence on the two things he loves most in life.', 'Uncommon'),
+('Homer Simpson - NY Bills', 'Homer Simpson', '/assets/homer/ny_bills.jpg', 'Homer Simpson showing his fandom for the Buffalo Bills. Even though it\'s not the most successful NFL team, Homer keeps his unwavering loyalty, even when the team is at its worst.', 'Rare'),
+('Bart Simpson - Naked', 'Bart Simpson', '/assets/bart/naked_bart.jpg', 'Bart Simpson in his most natural state. This card shows Bart naked, running through Springfield with his characteristic laugh and a totally carefree expression.', 'Common'),
+('Lisa Simpson - Loser', 'Lisa Simpson', '/assets/lisa/loser_lisa.jpg', 'Lisa Simpson at her most vulnerable moment. Even though she is the smartest in the family, even she has her moments of doubt and frustration. This card shows Lisa in a moment of reflection.', 'Uncommon'),
+('Lisa Simpson - Cool', 'Lisa Simpson', '/assets/lisa/cool_lisa.png', 'Lisa Simpson showing her most rebellious side. With sunglasses and a carefree attitude, this card shows Lisa enjoying life and breaking her own rules for once.', 'Rare'),
+('Marge Simpson - Mayor', 'Marge Simpson', '/assets/marge/mayor_marge.jpg', 'Marge Simpson as Springfield\'s mayor. With her characteristic blue hair and a power suit, this card shows Marge facing the challenges of governing a city full of eccentric characters.', 'Common'),
+('Marge Simpson - Witch', 'Marge Simpson', '/assets/marge/witch_marge.jpg', 'Marge Simpson transformed into a witch for Halloween. With a pointy hat and a magic wand, this card shows Marge in one of the series\' most memorable episodes.', 'Uncommon'),
+('Maggie Simpson - Violent', 'Maggie Simpson', '/assets/maggie/violent_maggie.jpg', 'Maggie Simpson showing her most dangerous side. Although she looks like a helpless baby, Maggie has surprising strength and doesn\'t hesitate to use her pacifier as a weapon when necessary.', 'Rare'),
+('Bart Simpson - Snake', 'Bart Simpson', '/assets/iconic_moments/barts_snake.jpg', 'The iconic moment where Bart Simpson is attacked by a snake. This card shows the scene that became one of the most memorable moments of the series, with Bart screaming as the snake chases him.', 'Legendary'),
+('The Stonecutters', 'Iconic Moment', '/assets/iconic_moments/the_stonecutters.jpg', 'The Stonecutters at their secret meeting. This card shows Homer discovering Springfield\'s most powerful secret society, with all the members wearing masks and ceremonial robes.', 'Legendary');

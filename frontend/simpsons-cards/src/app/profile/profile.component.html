@@ -57,6 +57,55 @@
     </table>
   </div>
 
+  <!-- Exchange History (archived requests) -->
+  <div class="exchange-history-section mt-3">
+    <button class="btn btn-link" (click)="toggleExchangeHistory()">
+      <span [ngClass]="{'collapsed': !showExchangeHistory}">
+        {{ showExchangeHistory ? 'Hide' : 'Show' }} Exchange History
+      </span>
+    </button>
+    <div *ngIf="showExchangeHistory">
+      <h4>Exchange History</h4>
+      <div *ngIf="archivedRequests.length === 0" class="text-muted">No archived requests.</div>
+      <table *ngIf="archivedRequests.length > 0" class="table table-bordered table-sm">
+        <thead>
+          <tr>
+            <th>Offer</th>
+            <th>Your offered card</th>
+            <th>Received card</th>
+            <th>Status</th>
+            <th>With user</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let req of archivedRequests">
+            <td>
+              <span>{{ req.card_name }} ({{ req.character_name }})</span>
+              <span class="badge bg-info ms-1">{{ req.min_rarity }}</span>
+            </td>
+            <td>
+              <span>{{ req.rarity }}</span>
+              <img [src]="req.image_url" alt="" style="width:32px; height:32px; object-fit:cover; margin-left:5px;">
+            </td>
+            <td>
+              <span>{{ req.offer_card_name }} ({{ req.offer_card_character_name }})</span>
+              <img [src]="req.offer_card_image_url" alt="" style="width:32px; height:32px; object-fit:cover; margin-left:5px;">
+              <span class="badge bg-info ms-1">{{ req.offer_card_rarity }}</span>
+            </td>
+            <td>
+              <span [ngClass]="{
+                'text-success': req.status === 'accepted',
+                'text-danger': req.status === 'rejected',
+                'text-warning': req.status === 'pending'
+              }">{{ req.status }}</span>
+            </td>
+            <td>{{ req.offer_owner_username }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <div class="card-grid-wrapper" *ngIf="cards.length > 0">
     <div class="card-grid">
       <div class="card-item" *ngFor="let card of cards" (click)="onCardClick(card)">
