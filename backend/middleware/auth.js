@@ -15,13 +15,13 @@ const User = require('../models/User');
  */
 module.exports = async (req, res, next) => {
   try {
-    // Logs detallados de la solicitud
+    // Detailed logs of the request
     console.log('\n=== Auth Middleware ===');
     console.log('Request URL:', req.url);
     console.log('Request Method:', req.method);
     console.log('Request Headers:', req.headers);
     
-    // Logs específicos del header Authorization
+    // Specific logs for the Authorization header
     console.log('=== Authorization Header Details ===');
     console.log('Raw Authorization Header:', req.headers.authorization);
     
@@ -30,14 +30,14 @@ module.exports = async (req, res, next) => {
       return res.status(401).json({ message: 'No authorization header' });
     }
 
-    // Logs de validación del header
+    // Logs for header validation
     console.log('=== Header Validation ===');
     if (!req.headers.authorization.startsWith('Bearer ')) {
       console.log('Error: Invalid Authorization header format');
       return res.status(401).json({ message: 'Invalid authorization header format' });
     }
 
-    // Extraer y validar el token
+    // Extract and validate the token
     const token = req.headers.authorization.split(' ')[1];
     console.log('=== Token Details ===');
     console.log('Extracted Token:', token);
@@ -47,21 +47,21 @@ module.exports = async (req, res, next) => {
       console.log('=== Decoded Token ===');
       console.log('Decoded Token Payload:', decoded);
 
-      // Obtener y validar el ID del usuario
+      // Get and validate the user ID
       const userId = decoded.userId || decoded.id;
       if (!userId) {
         console.log('Error: No user ID found in token');
         return res.status(400).json({ message: 'Invalid token payload' });
       }
 
-      // Buscar y validar el usuario
+      // Search and validate the user
       const user = await User.findById(userId);
       if (!user) {
         console.log('Error: User not found in database');
         return res.status(401).json({ message: 'User not found' });
       }
 
-      // Adjuntar usuario a la solicitud
+      // Attach user to the request
       req.user = user;
       console.log('=== User Authentication Success ===');
       console.log('Authenticated User:', user);

@@ -2,29 +2,29 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 
-// Utils para rareza en orden
+// Utility for rarity order
 const rarityOrder = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary'];
 function rarityValue(rarity) {
   return rarityOrder.indexOf(rarity);
 }
 
-// Crear una oferta de intercambio
+// Create an exchange offer
 // POST /api/exchanges
 router.post('/', async (req, res) => {
   try {
     const userId = req.user.id;
-    const { card_id, min_rarity } = req.body;
-    // Verifica que la carta pertenece al usuario
+    const { cardId, minRarity } = req.body;
+    // Verify the card belongs to the user
     const [rows] = await db.execute(
       'SELECT * FROM user_cards WHERE id = ? AND user_id = ?',
-      [card_id, userId]
+      [cardId, userId]
     );
     if (rows.length === 0) {
       return res.status(400).json({ message: 'Card not owned by user' });
     }
     await db.execute(
       'INSERT INTO exchange_offers (user_id, card_id, min_rarity, status) VALUES (?, ?, ?, ?)',
-      [userId, card_id, min_rarity, 'open']
+      [userId, cardId, minRarity, 'open']
     );
     res.status(201).json({ message: 'Exchange offer created' });
   } catch (err) {
@@ -33,7 +33,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Listar todas las ofertas abiertas
+// List all open exchange offers
 // GET /api/exchanges
 router.get('/', async (req, res) => {
   try {
@@ -52,14 +52,14 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Solicitar un intercambio
+// Request an exchange
 // POST /api/exchanges/:id/request
 router.post('/:id/request', async (req, res) => {
   try {
     const userId = req.user.id;
     const exchangeOfferId = req.params.id;
-    const { offered_card_id } = req.body;
-    // Obtener la oferta
+    const { offeredCardId } = req.body;
+    // Get the exchange offer
     const [offers] = await db.execute('SELECT * FROM exchange_offers WHERE id = ? AND status = ?', [exchangeOfferId, 'open']);
     if (offers.length === 0) {
       return res.status(404).json({ message: 'Exchange offer not found' });
@@ -68,13 +68,13 @@ router.post('/:id/request', async (req, res) => {
     if (offer.user_id === userId) {
       return res.status(400).json({ message: 'Cannot request your own offer' });
     }
-    // Verifica que la carta ofrecida pertenece al usuario
-    const [userCards] = await db.execute('SELECT * FROM user_cards WHERE id = ? AND user_id = ?', [offered_card_id, userId]);
+    // Verify the offered card belongs to the user
+    const [userCards] = await db.execute('SELECT * FROM user_cards WHERE id = ? AND user_id = ?', [offeredCardId, userId]);
     if (userCards.length === 0) {
       return res.status(400).json({ message: 'Card not owned by user' });
     }
-    // Comprobar rareza
-    const [cardRows] = await db.execute('SELECT c.rarity FROM user_cards uc JOIN cards c ON uc.card_id = c.id WHERE uc.id = ?', [offered_card_id]);
+    // Check rarity
+    const [cardRows] = await db.execute('SELECT c.rarity FROM user_cards uc JOIN cards c ON uc.card_id = c.id WHERE uc.id = ?', [offeredCardId]);
     if (cardRows.length === 0) {
       return res.status(400).json({ message: 'Card not found' });
     }
@@ -82,10 +82,10 @@ router.post('/:id/request', async (req, res) => {
     if (rarityValue(offeredRarity) < rarityValue(offer.min_rarity)) {
       return res.status(400).json({ message: 'Offered card does not meet minimum rarity' });
     }
-    // Crear la solicitud
+    // Create the exchange request
     await db.execute(
       'INSERT INTO exchange_requests (exchange_offer_id, user_id, offered_card_id, status) VALUES (?, ?, ?, ?)',
-      [exchangeOfferId, userId, offered_card_id, 'pending']
+      [exchangeOfferId, userId, offeredCardId, 'pending']
     );
     res.status(201).json({ message: 'Exchange request created' });
   } catch (err) {
@@ -94,7 +94,7 @@ router.post('/:id/request', async (req, res) => {
   }
 });
 
-// Aceptar una solicitud de intercambio
+// Accept an exchange request
 // POST /api/exchanges/:offerId/accept/:requestId
 router.post('/:offerId/accept/:requestId', async (req, res) => {
   const offerId = req.params.offerId;
@@ -104,24 +104,24 @@ router.post('/:offerId/accept/:requestId', async (req, res) => {
   let connection;
   try {
     connection = await dbPool.getConnection();
-    // Obtener la oferta
+    // Get the offer
     const [offers] = await connection.execute('SELECT * FROM exchange_offers WHERE id = ?', [offerId]);
     if (offers.length === 0) return res.status(404).json({ message: 'Offer not found' });
     const offer = offers[0];
     if (offer.user_id !== userId) return res.status(403).json({ message: 'Not your offer' });
     if (offer.status !== 'open') return res.status(400).json({ message: 'Offer is not open' });
-    // Obtener la solicitud
+    // Get the request
     const [requests] = await connection.execute('SELECT * FROM exchange_requests WHERE id = ? AND exchange_offer_id = ?', [requestId, offerId]);
     if (requests.length === 0) return res.status(404).json({ message: 'Request not found' });
     const request = requests[0];
     if (request.status !== 'pending') return res.status(400).json({ message: 'Request is not pending' });
-    // Verifica que ambos usuarios aún tienen sus cartas
+    // Check both users still own their cards
     const [offerCard] = await connection.execute('SELECT * FROM user_cards WHERE id = ? AND user_id = ?', [offer.card_id, offer.user_id]);
     const [requestCard] = await connection.execute('SELECT * FROM user_cards WHERE id = ? AND user_id = ?', [request.offered_card_id, request.user_id]);
     if (offerCard.length === 0 || requestCard.length === 0) {
       return res.status(400).json({ message: 'One of the cards is no longer available' });
     }
-    // Intercambiar la propiedad de las cartas (transacción)
+    // Exchange card ownership (transaction)
     await connection.beginTransaction();
     await connection.execute('UPDATE user_cards SET user_id = ? WHERE id = ?', [request.user_id, offer.card_id]);
     await connection.execute('UPDATE user_cards SET user_id = ? WHERE id = ?', [offer.user_id, request.offered_card_id]);
@@ -139,7 +139,7 @@ router.post('/:offerId/accept/:requestId', async (req, res) => {
   }
 });
 
-// Cancelar una oferta
+// Cancel an exchange offer
 // POST /api/exchanges/:id/cancel
 router.post('/:id/cancel', async (req, res) => {
   try {
@@ -158,7 +158,7 @@ router.post('/:id/cancel', async (req, res) => {
   }
 });
 
-// Obtener todas las solicitudes hechas por el usuario autenticado
+// Get all exchange requests made by the authenticated user
 // GET /api/exchanges/requests/mine
 router.get('/requests/mine', async (req, res) => {
   try {
@@ -180,17 +180,17 @@ router.get('/requests/mine', async (req, res) => {
   }
 });
 
-// Obtener todas las solicitudes para una oferta específica
+// Get all exchange requests for a specific offer
 // GET /api/exchanges/:offerId/requests
 router.get('/:offerId/requests', async (req, res) => {
   try {
     const userId = req.user.id;
     const offerId = req.params.offerId;
-    // Verifica que el usuario es dueño de la oferta
+    // Verify the user owns the offer
     const [offers] = await db.execute('SELECT * FROM exchange_offers WHERE id = ?', [offerId]);
     if (offers.length === 0) return res.status(404).json({ message: 'Offer not found' });
     if (offers[0].user_id !== userId) return res.status(403).json({ message: 'Not your offer' });
-    // Trae todas las solicitudes para la oferta
+    // Get all requests for the offer
     const [requests] = await db.execute(
       `SELECT er.*, uc.user_id AS requester_id, c.name AS card_name, c.character_name, c.image_url, c.rarity
        FROM exchange_requests er

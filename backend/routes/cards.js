@@ -68,17 +68,17 @@ router.get('/', async (req, res) => {
 router.get('/user', async (req, res) => {
   try {
     if (!req.user || !req.user.id) {
-      return res.status(401).json({ message: 'Usuario no autenticado' });
+      return res.status(401).json({ message: 'User not authenticated' });
     }
-    // Consulta SQL directa para devolver las cartas con el campo quantity y user_card_id
+    // Direct SQL query to return cards with quantity and user_card_id fields
     const [cards] = await db.query(
       `SELECT c.*, uc.quantity, uc.id AS user_card_id FROM cards c INNER JOIN user_cards uc ON c.id = uc.card_id WHERE uc.user_id = ?`,
       [req.user.id]
     );
     res.json(cards || []);
   } catch (error) {
-    console.error('Error al obtener las cartas del usuario:', error);
-    res.status(500).json({ message: 'Error interno al obtener cartas' });
+    console.error('Error getting user cards:', error);
+    res.status(500).json({ message: 'Internal error getting cards' });
   }
 });
 
@@ -219,7 +219,7 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// Seleccionar 4 cartas aleatorias (permitiendo repetidas)
+// Select 4 random cards (allowing duplicates)
 function getRandomCards(cards, n) {
   const result = [];
   for (let i = 0; i < n; i++) {
@@ -232,51 +232,51 @@ function getRandomCards(cards, n) {
 // POST /cards/claim-cards - Claim 4 random cards for the user
 router.post('/claim-cards', auth, async (req, res) => {
   try {
-    // Buscar usuario por id
+    // Find user by ID
     const [users] = await db.query('SELECT * FROM users WHERE id = ?', [req.user.id]);
     if (!users || users.length === 0) {
       return res.status(404).json({ message: 'User not found' });
     }
-    // Obtener todas las cartas de la base de datos
+    // Get all cards from the database
     const [allCards] = await db.query('SELECT * FROM cards');
     if (!allCards || allCards.length === 0) {
-      return res.status(404).json({ message: 'No hay cartas disponibles en la base de datos' });
+      return res.status(404).json({ message: 'No cards available in the database' });
     }
     const selectedCards = getRandomCards(allCards, 4);
-    // Agrupar las cartas seleccionadas por id y contar cuántas veces sale cada una
+    // Group selected cards by ID and count how many times each one appears
     const cardCounts = {};
     for (const card of selectedCards) {
       cardCounts[card.id] = (cardCounts[card.id] || 0) + 1;
     }
-    // Para cada carta única reclamada, incrementa quantity si ya existe, si no inserta nueva fila
+    // For each unique claimed card, increment quantity if it already exists, otherwise insert a new row
     for (const cardIdStr of Object.keys(cardCounts)) {
       const cardId = parseInt(cardIdStr, 10);
       const cantidad = cardCounts[cardId];
-      // ¿Ya existe?
+      // Does it already exist?
       const [existing] = await db.query(
         'SELECT id, quantity FROM user_cards WHERE user_id = ? AND card_id = ?',
         [req.user.id, cardId]
       );
       if (existing.length > 0) {
-        // Ya la tiene: suma la cantidad reclamada
+        // It already exists: add the claimed quantity
         await db.query(
           'UPDATE user_cards SET quantity = quantity + ? WHERE id = ?',
           [cantidad, existing[0].id]
         );
       } else {
-        // No la tiene: inserta nueva fila con la cantidad reclamada
+        // It does not exist: insert a new row with the claimed quantity
         await db.query(
           'INSERT INTO user_cards (user_id, card_id, quantity, obtained_at) VALUES (?, ?, ?, ?)',
           [req.user.id, cardId, cantidad, new Date()]
         );
       }
     }
-    // Actualizar el last claim time
+    // Update the last claim time
     await db.query('UPDATE users SET last_cards_drawn = ? WHERE id = ?', [new Date(), req.user.id]);
-    // Log único para depuración
+    // Single log for debugging
     console.log('DEBUG_BACKEND_UNICO', selectedCards.length, selectedCards.map(c => c.id));
     res.json({
-      message: 'DEBUG SOLO 4',
+      message: 'DEBUG ONLY 4',
       cards: selectedCards
     });
   } catch (error) {
@@ -289,18 +289,18 @@ router.post('/claim-cards', auth, async (req, res) => {
 // Allows users to claim new cards
 router.post('/claim-cards', auth, async (req, res) => {
   try {
-    console.log('Endpoint /claim-cards invocado. User recibido:', req.user);
+    console.log('Endpoint /claim-cards invoked. User received:', req.user);
     
     if (!req.user) {
       console.error('No user found in request');
-      return res.status(401).json({ message: 'Usuario no autenticado' });
+      return res.status(401).json({ message: 'User not authenticated' });
     }
 
     // Check if user exists
     const [users] = await db.query('SELECT * FROM users WHERE id = ?', [req.user.id]);
     if (!users || users.length === 0) {
       console.error('User not found in database:', req.user.id);
-      return res.status(401).json({ message: 'Usuario no encontrado' });
+      return res.status(401).json({ message: 'User not found' });
     }
 
     // Get available cards (excluding those already owned by the user)
@@ -308,7 +308,7 @@ router.post('/claim-cards', auth, async (req, res) => {
 
     if (!availableCards || availableCards.length === 0) {
       console.log('No available cards found');
-      return res.status(404).json({ message: 'No hay cartas disponibles' });
+      return res.status(404).json({ message: 'No cards available' });
     }
 
     // Add cards to user's collection
@@ -326,14 +326,14 @@ router.post('/claim-cards', auth, async (req, res) => {
     console.log('Cards claimed successfully:', cardsAdded);
     
     res.json({
-      message: 'Cartas reclamadas exitosamente',
+      message: 'Cards claimed successfully',
       cards: cardsAdded,
       remainingCards: availableCards.length - cardsAdded.length
     });
 
   } catch (error) {
-    console.error('Error en claim-cards:', error);
-    res.status(500).json({ message: 'Error interno al reclamar cartas' });
+    console.error('Error in claim-cards:', error);
+    res.status(500).json({ message: 'Internal error claiming cards' });
   }
 });
 

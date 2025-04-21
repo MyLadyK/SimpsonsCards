@@ -226,7 +226,7 @@ class Card {
    */
   async addToUser(userId) {
     try {
-      // Cambia a lógica segura: si ya existe, haz UPDATE; si no, INSERT con quantity
+      // Change to safe logic: if it already exists, do UPDATE; if not, INSERT with quantity
       const [existing] = await db.query(
         'SELECT id, quantity FROM user_cards WHERE user_id = ? AND card_id = ?',
         [userId, this.id]

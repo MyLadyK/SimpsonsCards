@@ -1,7 +1,7 @@
 <div class="container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="simpsons-font">Admin Dashboard</h2>
-    <button class="btn btn-danger" (click)="logout()">Logout</button>
+    <button class="btn btn-danger" (click)="logout()">Log Out</button>
   </div>
 
   <div class="card">
@@ -176,7 +176,7 @@
   </div>
 </div>
 
-<!-- Modal para mostrar imagen grande -->
+<!-- Modal to display large image -->
 <div class="modal fade" tabindex="-1" [ngClass]="{ show: imageModalOpen }" [ngStyle]="{ display: imageModalOpen ? 'block' : 'none' }" (click)="closeImageModal()" style="background: rgba(0,0,0,0.5);">
   <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
     <div class="modal-content">

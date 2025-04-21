@@ -9,7 +9,7 @@ import { ExchangeService } from '../services/exchange.service';
 import { Card } from '../models/card';
 import { Router } from '@angular/router';
 
-// HeaderComponent eliminado de imports porque ya no se usa directamente aquí
+// HeaderComponent removed from imports because it is no longer used directly here
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
@@ -43,7 +43,7 @@ export class ProfileComponent implements OnInit {
   private router = inject(Router);
 
   constructor() {
-    // Redirigir a dashboard si el usuario es admin (por username)
+    // Redirect to dashboard if the user is an admin (by username)
     const user = this.authService.getUser();
     if (user && user.username && user.username.toLowerCase() === 'admin') {
       this.router.navigate(['/admin']);
@@ -62,34 +62,34 @@ export class ProfileComponent implements OnInit {
         throw new Error('No token found');
       }
 
-      // Verificar si el token es válido
+      // Verify if the token is valid
       if (!this.authService.isTokenValid()) {
         throw new Error('Token expired');
       }
 
-      // Intentamos obtener la información del usuario desde el backend
+      // Attempt to get user information from the backend
       const user = await this.authService.getUserInfo().toPromise();
       if (user && user.username) {
         this.user = {
           username: user.username
         };
       } else {
-        // Si no obtenemos datos del backend, usamos el payload del token
+        // If we don't get data from the backend, use the token payload
         const decodedToken = this.authService.getUser();
         this.user = {
           username: decodedToken.username
         };
       }
 
-      // Cargar cartas del usuario (ahora incluyen quantity)
+      // Load user cards (now includes quantity)
       const cards = await this.cardService.getUserCards();
-      // Asegura que cada carta tenga user_card_id y owner_id
+      // Ensure each card has user_card_id and owner_id
       this.cards = cards.map(card => ({
         ...card,
         user_card_id: card.user_card_id ?? card.id,
         owner_id: this.user?.id
       }));
-      // Mapear cantidades para acceso rápido (cast explícito a number)
+      // Map quantities for quick access (explicit cast to number)
       this.cardQuantities = {};
       let total = 0;
       let repeated = 0;
@@ -135,7 +135,7 @@ export class ProfileComponent implements OnInit {
       if (response.message) {
         if (response.message === 'No available cards to claim') {
           this.showClaimError = true;
-          this.claimErrorMessage = 'No hay cartas disponibles para reclamar';
+          this.claimErrorMessage = 'No available cards to claim';
         } else {
           this.showClaimSuccess = true;
           this.claimedCards = response.cards;
@@ -146,7 +146,7 @@ export class ProfileComponent implements OnInit {
     } catch (error) {
       console.error('Error claiming cards:', error);
       this.showClaimError = true;
-      this.claimErrorMessage = 'Error al reclamar cartas. Por favor, inténtalo de nuevo.';
+      this.claimErrorMessage = 'Error claiming cards. Please try again.';
     } finally {
       this.loading = false;
     }
@@ -192,21 +192,21 @@ export class ProfileComponent implements OnInit {
 
   confirmOffer() {
     if (!this.offerCard) return;
-    // Depuración: mostrar la carta que se va a ofrecer
-    console.log('Oferta: offerCard', this.offerCard);
-    // Usar user_card_id si existe, si no, id
+    // Debugging: show the card being offered
+    console.log('Offer: offerCard', this.offerCard);
+    // Use user_card_id if it exists, otherwise id
     const user_card_id = this.offerCard.user_card_id || this.offerCard.id;
     if (!user_card_id) {
-      alert('No se pudo identificar la carta a ofrecer');
+      alert('Could not identify the card to offer');
       return;
     }
     this.exchangeService.createOffer(user_card_id, this.offerMinRarity).subscribe({
       next: () => {
         this.closeOfferModal();
-        alert('Oferta publicada en el mercado de intercambios');
+        alert('Offer published in the exchange market');
       },
       error: (err) => {
-        alert(err?.error?.message || 'Error al publicar la oferta');
+        alert(err?.error?.message || 'Error publishing the offer');
       }
     });
   }
@@ -214,5 +214,10 @@ export class ProfileComponent implements OnInit {
   logout() {
     this.authService.logout();
     window.location.href = '/sign-in';
+  }
+
+  removeRequest(index: number) {
+    // Remove a request from the myRequests array visually
+    this.myRequests.splice(index, 1);
   }
 }

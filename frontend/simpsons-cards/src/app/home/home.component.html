@@ -4,11 +4,11 @@
     <p class="lead">Join the world's most famous family in their daily adventures. Collect iconic moments, rare episodes, and exclusive character cards from The Simpsons universe.</p>
     <button *ngIf="!isAuthenticated" class="btn btn-primary" (click)="goToSignIn()">Sign In</button>
     <button *ngIf="!isAuthenticated" class="btn btn-outline-primary" (click)="goToSignUp()">Sign Up</button>
-    <button *ngIf="isAuthenticated" class="btn btn-success" (click)="router.navigate(['/profile'])">Ir a mi perfil</button>
+    <button *ngIf="isAuthenticated" class="btn btn-success" (click)="router.navigate(['/profile'])">Go to my profile</button>
     <button *ngIf="isAuthenticated" class="btn btn-danger ms-2" (click)="logout()">Logout</button>
   </div>
 
-  <!-- Carrusel de Bootstrap -->
+  <!-- Bootstrap Carousel -->
   <div id="homeCarousel" class="carousel slide mt-5" data-bs-ride="carousel">
     <div class="carousel-indicators">
       <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>

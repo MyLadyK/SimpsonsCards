@@ -29,7 +29,7 @@ export class ExchangeMarketComponent implements OnInit {
 
   rarities = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary'];
 
-  // Utilidad para comparar rarezas
+  // Utility to compare rarities
   rarityOrder = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary'];
   rarityValue(rarity: string): number {
     return this.rarityOrder.indexOf(rarity);
@@ -67,7 +67,7 @@ export class ExchangeMarketComponent implements OnInit {
   }
 
   loadRequestsForOffer(offerId: number) {
-    // Solo cargar solicitudes si la oferta es del usuario actual
+    // Only load requests if the offer belongs to the current user
     const currentUser = this.authService.getUser();
     const offer = this.offers.find(o => o.id === offerId);
     if (!offer || offer.username !== currentUser?.username) {
@@ -89,12 +89,12 @@ export class ExchangeMarketComponent implements OnInit {
     this.adminService.getCards().subscribe({
       next: cards => {
         const userId = this.authService.getUserId();
-        // Si el endpoint /api/admin/cards no devuelve owner_id ni user_card_id, obtenlas del endpoint correcto
-        // Fallback: cargar desde CardService si estamos en modo usuario normal
+        // If the endpoint /api/admin/cards does not return owner_id or user_card_id, get them from the correct endpoint
+        // Fallback: load from CardService if we are in normal user mode
         if (cards.length && cards[0].owner_id !== undefined) {
           this.myCards = cards.filter((c: any) => c.owner_id === userId);
         } else {
-          // fallback: pedir a /api/cards/user
+          // fallback: get from /api/cards/user
           this.cardService.getUserCards().then(userCards => {
             this.myCards = userCards;
           });
@@ -127,15 +127,15 @@ export class ExchangeMarketComponent implements OnInit {
   }
 
   canRequest(offer: ExchangeOffer): boolean {
-    // No permitir si la oferta es del propio usuario
+    // Do not allow if the offer belongs to the current user
     if (offer.user_id === this.authService.getUserId()) return false;
-    // Verificar si tiene cartas que cumplen la rareza mínima
+    // Check if the user has cards that meet the minimum rarity
     return this.myCards.some(card => this.rarityValue(card.rarity) >= this.rarityValue(offer.min_rarity));
   }
 
   openRequestModal(offer: ExchangeOffer) {
     this.requestingOffer = offer;
-    // Cartas válidas: cumplen rareza mínima y no son de la oferta
+    // Valid cards: meet the minimum rarity and do not belong to the offer
     this.validRequestCards = this.myCards.filter(card => this.rarityValue(card.rarity) >= this.rarityValue(offer.min_rarity));
     this.selectedRequestCardId = null;
   }
@@ -148,17 +148,17 @@ export class ExchangeMarketComponent implements OnInit {
 
   confirmRequest() {
     if (!this.requestingOffer || !this.selectedRequestCardId) return;
-    // Depuración: mostrar la carta seleccionada para intercambio
+    // Debugging: show the selected card for exchange
     const selectedCard = this.myCards.find(card => card.user_card_id === this.selectedRequestCardId || card.id === this.selectedRequestCardId);
-    console.log('Solicitud de intercambio: selectedCard', selectedCard);
+    console.log('Exchange request: selectedCard', selectedCard);
     this.exchangeService.requestExchange(this.requestingOffer.id, this.selectedRequestCardId).subscribe({
       next: () => {
         this.closeRequestModal();
         this.loadOffers();
-        alert('Solicitud enviada correctamente');
+        alert('Request sent successfully');
       },
       error: err => {
-        alert(err?.error?.message || 'Error al solicitar intercambio');
+        alert(err?.error?.message || 'Error sending request');
       }
     });
   }
@@ -168,17 +168,17 @@ export class ExchangeMarketComponent implements OnInit {
       next: () => {
         this.loadRequestsForOffer(offerId);
         this.loadOffers();
-        alert('Solicitud aceptada y cartas intercambiadas');
+        alert('Request accepted and cards exchanged');
       },
       error: err => {
-        alert(err?.error?.message || 'Error al aceptar la solicitud');
+        alert(err?.error?.message || 'Error accepting request');
       }
     });
   }
 
   rejectRequest(offerId: number, requestId: number) {
-    // La API backend no tiene endpoint explícito para rechazar, pero aceptar otra solicitud marca las demás como rechazadas.
-    // Aquí solo mostramos un mensaje.
-    alert('Para rechazar una solicitud, acepta otra o cancela la oferta.');
+    // The backend API does not have an explicit endpoint to reject, but accepting another request marks the others as rejected.
+    // Here we only show a message.
+    alert('To reject a request, accept another or cancel the offer.');
   }
 }

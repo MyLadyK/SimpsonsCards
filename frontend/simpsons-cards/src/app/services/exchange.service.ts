@@ -45,12 +45,12 @@ export class ExchangeService {
     return this.http.post(`${this.apiUrl}/${offerId}/cancel`, {});
   }
 
-  // Obtener todas las solicitudes hechas por el usuario autenticado
+  // Get all requests made by the authenticated user
   getMyRequests() {
     return this.http.get<any[]>(`${this.apiUrl}/requests/mine`);
   }
 
-  // Obtener todas las solicitudes para una oferta específica (solo dueño)
+  // Get all requests for a specific offer (only owner)
   getRequestsForOffer(offerId: number) {
     return this.http.get<any[]>(`${this.apiUrl}/${offerId}/requests`);
   }

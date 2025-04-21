@@ -1,4 +1,4 @@
-# Simpsons Cards
+# Simpsons Shuffle
 
 A web application for managing a collection of Simpsons character cards. Users can collect, trade, and manage their card collections.
 
@@ -10,6 +10,11 @@ A web application for managing a collection of Simpsons character cards. Users c
 - Admin dashboard for managing users and cards
 - Card rarity system
 - User profile management
+- **Exchange Market:** Offer your cards for trade, browse available offers, and request exchanges with other users
+- **Exchange Requests:** View, accept, or reject incoming requests for your offers; manage your own outgoing requests
+- **Manual Request Management:** Remove accepted or rejected exchange requests from your profile manually
+- **Navigation:** Quick access to About Us and FAQ sections from the main menu
+- **Full English UI:** All user-facing text, documentation, and comments are in English
 
 ## Tech Stack
 
@@ -95,16 +100,25 @@ SimpsonsCards/
 | card_id           | INT         | Foreign key to cards         |
 | obtained_at       | TIMESTAMP   | When card was obtained       |
 
-## API Endpoints
+#### exchanges
+| Column            | Type        | Description                  |
+|-------------------|-------------|------------------------------|
+| id                | INT         | Primary key                  |
+| offer_user_card_id| INT         | Card offered (user_cards.id) |
+| request_user_card_id| INT       | Card requested (user_cards.id)|
+| offer_owner_id    | INT         | User offering the card       |
+| request_owner_id  | INT         | User requesting the card     |
+| status            | VARCHAR(20) | pending/accepted/rejected    |
+| created_at        | TIMESTAMP   | Request creation timestamp   |
+
+## API Endpoints (Main)
 
 ### Authentication
-
 - POST `/auth/register` - Register new user
 - POST `/auth/login` - Login user
 - GET `/auth/user` - Get user info
 
 ### Cards
-
 - GET `/cards` - Get all cards
 - GET `/cards/:id` - Get card by ID
 - POST `/cards` - Create new card
@@ -115,27 +129,24 @@ SimpsonsCards/
 - GET `/cards/rarity/:rarity` - Get cards by rarity
 - GET `/cards/character/:name` - Get cards by character name
 
-### Admin
+### Exchange Market
+- GET `/exchanges` - List all offers
+- POST `/exchanges` - Create a new offer
+- GET `/exchanges/:id` - Get offer details
+- POST `/exchanges/:offerId/request` - Request an exchange for an offer
+- GET `/exchanges/requests` - View your outgoing requests
+- GET `/exchanges/received` - View incoming requests for your offers
+- POST `/exchanges/:offerId/accept/:requestId` - Accept a request
+- POST `/exchanges/:offerId/reject/:requestId` - Reject a request
+- DELETE `/exchanges/requests/:requestId` - Remove a request (accepted/rejected)
 
+### Admin
 - GET `/admin/users` - Get all users
 - DELETE `/admin/users/:id` - Delete user
 - GET `/admin/cards` - Get all cards (admin view)
 - POST `/admin/cards` - Create card (admin)
 - PUT `/admin/cards/:id` - Update card (admin)
 - DELETE `/admin/cards/:id` - Delete card (admin)
-
-## Environment Variables
-
-Create a `.env` file in the backend directory with the following variables:
-
-```
-PORT=3000
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=your_password
-DB_NAME=springfield_shuffle
-JWT_SECRET=your_jwt_secret
-```
 
 ## Installation
 
@@ -166,11 +177,10 @@ JWT_SECRET=your_jwt_secret
 
 1. Register a new account
 2. Login with your credentials
-3. Start collecting cards
+3. Start collecting and trading cards
 4. Admin users can manage users and cards through the admin dashboard
 
 ## Security
-
 - JWT-based authentication
 - Password hashing with bcrypt
 - Rate limiting for card claims
@@ -179,7 +189,7 @@ JWT_SECRET=your_jwt_secret
 
 ## Usage Policy
 
-This project is intended for personal and educational use. If you wish to use it for commercial purposes or incorporate it into other projects, please contact the author.
+This project is intended for personal and educational use. For commercial use or integration, please contact the author.
 
 ## Contributing
 

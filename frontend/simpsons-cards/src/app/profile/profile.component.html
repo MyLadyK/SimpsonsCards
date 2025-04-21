@@ -1,4 +1,4 @@
-<!-- ELIMINADO: <app-header ...> duplicado, sólo debe ir en app.component.html global -->
+<!-- REMOVED: <app-header ...> duplicate, should only be in app.component.html global -->
 
 <div class="profile-container" *ngIf="!loading">
   <div class="profile-header">
@@ -9,7 +9,7 @@
   <div class="profile-content">
     <div class="user-info">
       <h3>My Collection</h3>
-      <p>{{ totalCards }} total cards <span *ngIf="repeatedCards > 0">({{ repeatedCards }} repeated)</span></p>
+      <p>{{ totalCards }} total cards <span *ngIf="repeatedCards > 0">({{ repeatedCards }} duplicates)</span></p>
     </div>
 
     <div class="claim-section">
@@ -23,19 +23,19 @@
     </div>
   </div>
 
-  <!-- Mis solicitudes de intercambio -->
+  <!-- My exchange requests -->
   <div class="exchange-requests-section" *ngIf="myRequests.length > 0">
-    <h3>Mis solicitudes de intercambio</h3>
+    <h3>My exchange requests</h3>
     <table class="table table-bordered table-sm">
       <thead>
         <tr>
-          <th>Oferta</th>
-          <th>Tu carta ofrecida</th>
-          <th>Estado</th>
+          <th>Offer</th>
+          <th>Your offered card</th>
+          <th>Status</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let req of myRequests">
+        <tr *ngFor="let req of myRequests; let i = index">
           <td>
             <span>{{ req.card_name }} ({{ req.character_name }})</span>
             <span class="badge bg-info ms-1">{{ req.min_rarity }}</span>
@@ -50,6 +50,7 @@
               'text-danger': req.status === 'rejected',
               'text-warning': req.status === 'pending'
             }">{{ req.status }}</span>
+            <button *ngIf="req.status !== 'pending'" class="btn btn-outline-secondary btn-sm ms-2" (click)="removeRequest(i)">Remove</button>
           </td>
         </tr>
       </tbody>
@@ -75,17 +76,17 @@
         <span class="card-quantity-badge simpsons-font" *ngIf="card.id !== undefined && cardQuantities[card.id] && cardQuantities[card.id] > 1">
           x{{ cardQuantities[card.id] }}
         </span>
-        <button class="btn btn-warning btn-sm mt-2 w-100" (click)="openOfferModal(card, $event)">Ofrecer en intercambio</button>
+        <button class="btn btn-warning btn-sm mt-2 w-100" (click)="openOfferModal(card, $event)">Offer for trade</button>
       </div>
     </div>
   </div>
 
-  <!-- Modal para cartas reclamadas -->
+  <!-- Modal for claimed cards -->
   <div class="modal fade show card-modal" tabindex="-1" [ngStyle]="{ display: showClaimedModal ? 'block' : 'none', background: 'rgba(0,0,0,0.7)' }" *ngIf="showClaimedModal">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content claimed-modal-content">
         <div class="modal-header">
-          <h5 class="modal-title simpsons-font">¡Nuevas cartas reclamadas!</h5>
+          <h5 class="modal-title simpsons-font">New cards claimed!</h5>
           <button type="button" class="btn-close" (click)="closeClaimedModal()"></button>
         </div>
         <div class="modal-body claimed-modal-body">
@@ -108,30 +109,30 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-primary simpsons-font" (click)="closeClaimedModal()">Cerrar</button>
+          <button class="btn btn-primary simpsons-font" (click)="closeClaimedModal()">Close</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal para ofrecer carta en intercambio -->
+  <!-- Modal to offer card for trade -->
   <div class="modal fade show" tabindex="-1" [ngStyle]="{ display: showOfferModal ? 'block' : 'none', background: 'rgba(0,0,0,0.7)' }" *ngIf="showOfferModal">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Ofrecer carta en intercambio</h5>
+          <h5 class="modal-title">Offer card for trade</h5>
           <button type="button" class="btn-close" (click)="closeOfferModal()"></button>
         </div>
         <div class="modal-body">
           <p><strong>{{ offerCard?.name }}</strong> ({{ offerCard?.character_name }}) - {{ offerCard?.rarity }}</p>
-          <label>Rareza mínima aceptada:</label>
+          <label>Minimum accepted rarity:</label>
           <select class="form-select" [(ngModel)]="offerMinRarity">
             <option *ngFor="let r of rarities" [value]="r">{{ r }}</option>
           </select>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-secondary" (click)="closeOfferModal()">Cancelar</button>
-          <button class="btn btn-primary" (click)="confirmOffer()">Ofrecer</button>
+          <button class="btn btn-secondary" (click)="closeOfferModal()">Cancel</button>
+          <button class="btn btn-primary" (click)="confirmOffer()">Offer</button>
         </div>
       </div>
     </div>
@@ -145,7 +146,7 @@
     <p>Loading cards...</p>
   </div>
 
-  <!-- Modal Bootstrap para la carta seleccionada -->
+  <!-- Modal Bootstrap for selected card -->
   <div class="modal fade show card-modal" tabindex="-1" [ngStyle]="{ display: selectedCard ? 'block' : 'none', background: 'rgba(0,0,0,0.5)' }" *ngIf="selectedCard">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">

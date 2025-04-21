@@ -43,7 +43,7 @@ router.post('/register', async (req, res) => {
       { expiresIn: '24h' }
     );
 
-    console.log(' Register successful - Token created:', token);
+    console.log('Registration successful - Token created:', token);
 
     res.status(201).json({
       token,
@@ -53,7 +53,7 @@ router.post('/register', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error(' Error in /auth/register:', error);
+    console.error('Error in /auth/register:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -79,7 +79,7 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    console.log(' Usuario encontrado en DB:', user);
+    console.log('User found in DB:', user);
 
     const token = jwt.sign(
       { userId: user.id, username: user.username },
@@ -87,7 +87,7 @@ router.post('/login', async (req, res) => {
       { expiresIn: '24h' }
     );
 
-    console.log(' Login exitoso - Token creado:', token);
+    console.log('Login successful - Token created:', token);
 
     res.json({
       token,
@@ -97,7 +97,7 @@ router.post('/login', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error(' Error en /auth/login:', error);
+    console.error('Error in /auth/login:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -107,30 +107,30 @@ router.post('/login', async (req, res) => {
 // Returns user information for authenticated requests
 router.get('/user', auth, async (req, res) => {
   try {
-    console.log(' Petición a /auth/user - Token payload:', req.user);
+    console.log('Request to /auth/user - Token payload:', req.user);
 
     if (!req.user || !req.user.id) {
-      console.error(' Error: req.user.id no está definido');
+      console.error('Error: req.user.id is not defined');
       return res.status(400).json({ message: 'Invalid token payload' });
     }
 
-    console.log(' Buscando usuario con ID:', req.user.id);
+    console.log('Searching for user with ID:', req.user.id);
 
     const user = await User.findById(req.user.id);
 
     if (!user) {
-      console.log(' Usuario no encontrado en la BD');
+      console.log('User not found in DB');
       return res.status(404).json({ message: 'User not found' });
     }
 
-    console.log(' Usuario encontrado:', user);
+    console.log('User found:', user);
 
     res.json({
       id: user.id,
       username: user.username
     });
   } catch (error) {
-    console.error(' Error en /auth/user:', error);
+    console.error('Error in /auth/user:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

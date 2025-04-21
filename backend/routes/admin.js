@@ -58,21 +58,21 @@ router.get('/cards', async (req, res) => {
   }
 });
 
-// Normaliza el nombre del personaje para el directorio
+// Normalize the character name for the directory
 function normalizeCharacterDir(name) {
   return name
     .toLowerCase()
     .trim()
     .replace(/ /g, '_')
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // quita tildes
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // remove accents
 }
 
-// Configuración de multer para almacenamiento dinámico
+// Multer configuration for dynamic storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const character = req.body.character_name;
     const dir = normalizeCharacterDir(character);
-    // Ruta ABSOLUTA al directorio public del backend
+    // Absolute path to the public directory of the backend
     const dest = path.join(__dirname, '../public', dir);
     fs.mkdirSync(dest, { recursive: true });
     cb(null, dest);
@@ -84,7 +84,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // POST /admin/cards
-// Creates a new card in the system (con imagen)
+// Creates a new card in the system (with image)
 router.post('/cards', upload.single('image'), async (req, res) => {
   try {
     const { name, character_name, description, rarity } = req.body;
@@ -92,11 +92,11 @@ router.post('/cards', upload.single('image'), async (req, res) => {
     let dir = '';
     if (req.file) {
       dir = normalizeCharacterDir(character_name);
-      console.log('Dir normalizado:', dir);
+      console.log('Normalized directory:', dir);
       image_url = `/assets/${dir}/${req.file.filename}`;
     }
-    // LOG para depuración
-    console.log('Valores recibidos:', { name, character_name, image_url, description, rarity });
+    // Log for debugging
+    console.log('Received values:', { name, character_name, image_url, description, rarity });
     const safe = v => v === undefined ? null : v;
     const [result] = await db.execute(
       'INSERT INTO cards (name, character_name, image_url, description, rarity) VALUES (?, ?, ?, ?, ?)',

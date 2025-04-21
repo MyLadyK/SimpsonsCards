@@ -6,6 +6,8 @@ import { ProfileComponent } from './profile/profile.component';
 import { CardDrawComponent } from './components/card-draw/card-draw.component';
 import { AdminDashboardngComponent } from './admin-dashboardng/admin-dashboardng.component';
 import { ExchangeMarketComponent } from './exchange-market/exchange-market.component';
+import { AboutUsComponent } from './about-us/about-us.component';
+import { FaqComponent } from './faq/faq.component';
 
 export const routes: Routes = [
   { path: 'sign-in', component: LoginComponent },
@@ -14,5 +16,7 @@ export const routes: Routes = [
   { path: 'card-draw', component: CardDrawComponent },
   { path: 'admin', component: AdminDashboardngComponent },
   { path: 'exchanges', component: ExchangeMarketComponent },
+  { path: 'about-us', component: AboutUsComponent },
+  { path: 'faq', component: FaqComponent },
   { path: '', component: HomeComponent }
 ];

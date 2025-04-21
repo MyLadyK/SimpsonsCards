@@ -63,7 +63,7 @@ export class AdminService {
    */
   addCard(card: FormData): Observable<Card> {
     return this.http.post<Card>(`${environment.apiUrl}/api/admin/cards`, card, {
-      headers: this.getAuthHeaders(false) // No content-type para FormData
+      headers: this.getAuthHeaders(false) // No content-type for FormData
     });
   }
 

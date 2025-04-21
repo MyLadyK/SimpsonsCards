@@ -94,7 +94,7 @@ export class AuthService {
    * Retrieves the stored JWT token from localStorage
    * @returns The stored token or null if none exists
    */
-  // Cambiado de private a public para permitir acceso desde otros componentes y servicios
+  // Changed from private to public to allow access from other components and services
   public getToken(): string | null {
     const token = localStorage.getItem('token');
     return token;

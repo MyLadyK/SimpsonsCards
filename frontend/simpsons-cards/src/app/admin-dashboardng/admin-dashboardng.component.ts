@@ -87,7 +87,7 @@ export class AdminDashboardngComponent implements OnInit {
   }
 
   deleteUser(userId: number) {
-    if (confirm('¿Estás seguro de que quieres eliminar este usuario?')) {
+    if (confirm('Are you sure you want to delete this user?')) {
       this.adminService.deleteUser(userId).subscribe({
         next: () => {
           this.loadUsers();
@@ -102,7 +102,7 @@ export class AdminDashboardngComponent implements OnInit {
 
   deleteCard(cardId: number | undefined) {
     if (cardId === undefined) return;
-    if (confirm('¿Estás seguro de que quieres eliminar esta carta?')) {
+    if (confirm('Are you sure you want to delete this card?')) {
       this.adminService.deleteCard(cardId).subscribe({
         next: () => {
           this.loadCards();
@@ -117,7 +117,7 @@ export class AdminDashboardngComponent implements OnInit {
 
   startEditCard(card: Card) {
     this.editCardId = card.id ?? null;
-    // Copia profunda para evitar modificar el array hasta guardar
+    // Deep copy to avoid modifying the array until saved
     this.editCard = { ...card };
   }
 
@@ -150,7 +150,7 @@ export class AdminDashboardngComponent implements OnInit {
     this.router.navigate(['/']);
   }
 
-  // Modal para mostrar imagen grande
+  // Modal to display large image
   showImageModal(url: string, title: string) {
     const card = this.cards.find(c => c.image_url === url && c.name === title);
     this.imageModalUrl = url;
@@ -214,7 +214,7 @@ export class AdminDashboardngComponent implements OnInit {
 
   addCard() {
     if (!this.imageFile) {
-      this.addCardError = 'Debes seleccionar una imagen';
+      this.addCardError = 'You must select an image';
       return;
     }
     const formData = new FormData();

@@ -17,7 +17,7 @@ export class HeaderComponent {
   constructor(public router: Router) {}
 
   goTo(path: string) {
-    // Si el destino es '/profile' y el usuario es admin, redirige a /admin
+    // If the destination is '/profile' and the user is an admin, redirect to /admin
     if (path === '/profile' && this.isAdmin) {
       this.router.navigate(['/admin']);
     } else {
