@@ -35,6 +35,7 @@ export class ProfileComponent implements OnInit {
   offerCard: Card | null = null;
   offerMinRarity: string = 'Common';
   rarities = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary'];
+  myRequests: any[] = [];
 
   private authService = inject(AuthService);
   private cardService = inject(CardService);
@@ -49,8 +50,9 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.loadUserProfile();
+    await this.loadMyRequests();
   }
 
   private async loadUserProfile() {
@@ -109,6 +111,16 @@ export class ProfileComponent implements OnInit {
       this.loading = false;
       this.showClaimError = true;
       this.claimErrorMessage = error?.message || 'Error loading profile';
+    }
+  }
+
+  async loadMyRequests() {
+    try {
+      const result = await this.exchangeService.getMyRequests().toPromise();
+      this.myRequests = result ?? [];
+    } catch (error) {
+      console.error('Error loading my exchange requests:', error);
+      this.myRequests = [];
     }
   }
 
@@ -180,6 +192,8 @@ export class ProfileComponent implements OnInit {
 
   confirmOffer() {
     if (!this.offerCard) return;
+    // Depuración: mostrar la carta que se va a ofrecer
+    console.log('Oferta: offerCard', this.offerCard);
     // Usar user_card_id si existe, si no, id
     const user_card_id = this.offerCard.user_card_id || this.offerCard.id;
     if (!user_card_id) {

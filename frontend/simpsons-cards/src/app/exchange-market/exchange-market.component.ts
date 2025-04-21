@@ -25,6 +25,7 @@ export class ExchangeMarketComponent implements OnInit {
   requestingOffer: ExchangeOffer | null = null;
   selectedRequestCardId: number | null = null;
   validRequestCards: Card[] = [];
+  offerRequests: { [offerId: number]: any[] } = {};
 
   rarities = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary'];
 
@@ -34,12 +35,16 @@ export class ExchangeMarketComponent implements OnInit {
     return this.rarityOrder.indexOf(rarity);
   }
 
+  public authService: AuthService;
+
   constructor(
     private exchangeService: ExchangeService,
     private adminService: AdminService,
-    private authService: AuthService,
+    authService: AuthService,
     private cardService: CardService // Inject CardService
-  ) {}
+  ) {
+    this.authService = authService;
+  }
 
   ngOnInit(): void {
     this.loadOffers();
@@ -52,10 +57,30 @@ export class ExchangeMarketComponent implements OnInit {
       next: offers => {
         this.offers = offers;
         this.loading = false;
+        offers.forEach(offer => this.loadRequestsForOffer(offer.id));
       },
       error: err => {
         this.error = 'Error loading offers';
         this.loading = false;
+      }
+    });
+  }
+
+  loadRequestsForOffer(offerId: number) {
+    // Solo cargar solicitudes si la oferta es del usuario actual
+    const currentUser = this.authService.getUser();
+    const offer = this.offers.find(o => o.id === offerId);
+    if (!offer || offer.username !== currentUser?.username) {
+      this.offerRequests[offerId] = [];
+      return;
+    }
+    this.exchangeService.getRequestsForOffer(offerId).subscribe({
+      next: (requests) => {
+        this.offerRequests[offerId] = requests;
+      },
+      error: (err) => {
+        console.error('Error loading requests for offer', offerId, err);
+        this.offerRequests[offerId] = [];
       }
     });
   }
@@ -123,6 +148,9 @@ export class ExchangeMarketComponent implements OnInit {
 
   confirmRequest() {
     if (!this.requestingOffer || !this.selectedRequestCardId) return;
+    // Depuración: mostrar la carta seleccionada para intercambio
+    const selectedCard = this.myCards.find(card => card.user_card_id === this.selectedRequestCardId || card.id === this.selectedRequestCardId);
+    console.log('Solicitud de intercambio: selectedCard', selectedCard);
     this.exchangeService.requestExchange(this.requestingOffer.id, this.selectedRequestCardId).subscribe({
       next: () => {
         this.closeRequestModal();
@@ -133,5 +161,24 @@ export class ExchangeMarketComponent implements OnInit {
         alert(err?.error?.message || 'Error al solicitar intercambio');
       }
     });
+  }
+
+  acceptRequest(offerId: number, requestId: number) {
+    this.exchangeService.acceptRequest(offerId, requestId).subscribe({
+      next: () => {
+        this.loadRequestsForOffer(offerId);
+        this.loadOffers();
+        alert('Solicitud aceptada y cartas intercambiadas');
+      },
+      error: err => {
+        alert(err?.error?.message || 'Error al aceptar la solicitud');
+      }
+    });
+  }
+
+  rejectRequest(offerId: number, requestId: number) {
+    // La API backend no tiene endpoint explícito para rechazar, pero aceptar otra solicitud marca las demás como rechazadas.
+    // Aquí solo mostramos un mensaje.
+    alert('Para rechazar una solicitud, acepta otra o cancela la oferta.');
   }
 }

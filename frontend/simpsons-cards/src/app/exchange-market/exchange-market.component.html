@@ -57,6 +57,43 @@
   </table>
   <div *ngIf="!offers.length && !loading" class="text-center text-muted">No exchange offers available.</div>
 
+  <!-- Solicitudes recibidas para mis ofertas -->
+  <div *ngFor="let offer of offers">
+    <div *ngIf="offer.username === authService.getUser()?.username && offerRequests[offer.id]?.length">
+      <h5 class="mt-3">Solicitudes para tu oferta: {{ offer.name }} ({{ offer.character_name }})</h5>
+      <table class="table table-bordered table-sm">
+        <thead>
+          <tr>
+            <th>Solicitante</th>
+            <th>Carta ofrecida</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let req of offerRequests[offer.id]">
+            <td>{{ req.requester_id }}</td>
+            <td>
+              <span>{{ req.rarity }}</span>
+              <img [src]="req.image_url" alt="" style="width:32px; height:32px; object-fit:cover; margin-left:5px;">
+            </td>
+            <td>
+              <span [ngClass]="{
+                'text-success': req.status === 'accepted',
+                'text-danger': req.status === 'rejected',
+                'text-warning': req.status === 'pending'
+              }">{{ req.status }}</span>
+            </td>
+            <td>
+              <button *ngIf="req.status === 'pending'" class="btn btn-success btn-sm me-1" (click)="acceptRequest(offer.id, req.id)">Aceptar</button>
+              <button *ngIf="req.status === 'pending'" class="btn btn-danger btn-sm" (click)="rejectRequest(offer.id, req.id)">Rechazar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <!-- Modal para solicitar intercambio -->
   <div class="modal fade show" tabindex="-1" style="display:block; background:rgba(0,0,0,0.4)" *ngIf="requestingOffer">
     <div class="modal-dialog">

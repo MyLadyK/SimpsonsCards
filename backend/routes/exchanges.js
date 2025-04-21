@@ -100,37 +100,42 @@ router.post('/:offerId/accept/:requestId', async (req, res) => {
   const offerId = req.params.offerId;
   const requestId = req.params.requestId;
   const userId = req.user.id;
+  const dbPool = db;
+  let connection;
   try {
+    connection = await dbPool.getConnection();
     // Obtener la oferta
-    const [offers] = await db.execute('SELECT * FROM exchange_offers WHERE id = ?', [offerId]);
+    const [offers] = await connection.execute('SELECT * FROM exchange_offers WHERE id = ?', [offerId]);
     if (offers.length === 0) return res.status(404).json({ message: 'Offer not found' });
     const offer = offers[0];
     if (offer.user_id !== userId) return res.status(403).json({ message: 'Not your offer' });
     if (offer.status !== 'open') return res.status(400).json({ message: 'Offer is not open' });
     // Obtener la solicitud
-    const [requests] = await db.execute('SELECT * FROM exchange_requests WHERE id = ? AND exchange_offer_id = ?', [requestId, offerId]);
+    const [requests] = await connection.execute('SELECT * FROM exchange_requests WHERE id = ? AND exchange_offer_id = ?', [requestId, offerId]);
     if (requests.length === 0) return res.status(404).json({ message: 'Request not found' });
     const request = requests[0];
     if (request.status !== 'pending') return res.status(400).json({ message: 'Request is not pending' });
     // Verifica que ambos usuarios aún tienen sus cartas
-    const [offerCard] = await db.execute('SELECT * FROM user_cards WHERE id = ? AND user_id = ?', [offer.card_id, offer.user_id]);
-    const [requestCard] = await db.execute('SELECT * FROM user_cards WHERE id = ? AND user_id = ?', [request.offered_card_id, request.user_id]);
+    const [offerCard] = await connection.execute('SELECT * FROM user_cards WHERE id = ? AND user_id = ?', [offer.card_id, offer.user_id]);
+    const [requestCard] = await connection.execute('SELECT * FROM user_cards WHERE id = ? AND user_id = ?', [request.offered_card_id, request.user_id]);
     if (offerCard.length === 0 || requestCard.length === 0) {
       return res.status(400).json({ message: 'One of the cards is no longer available' });
     }
     // Intercambiar la propiedad de las cartas (transacción)
-    await db.beginTransaction();
-    await db.execute('UPDATE user_cards SET user_id = ? WHERE id = ?', [request.user_id, offer.card_id]);
-    await db.execute('UPDATE user_cards SET user_id = ? WHERE id = ?', [offer.user_id, request.offered_card_id]);
-    await db.execute('UPDATE exchange_offers SET status = ? WHERE id = ?', ['completed', offerId]);
-    await db.execute('UPDATE exchange_requests SET status = ? WHERE id = ?', ['accepted', requestId]);
-    await db.execute('UPDATE exchange_requests SET status = ? WHERE exchange_offer_id = ? AND id != ?', ['rejected', offerId, requestId]);
-    await db.commit();
+    await connection.beginTransaction();
+    await connection.execute('UPDATE user_cards SET user_id = ? WHERE id = ?', [request.user_id, offer.card_id]);
+    await connection.execute('UPDATE user_cards SET user_id = ? WHERE id = ?', [offer.user_id, request.offered_card_id]);
+    await connection.execute('UPDATE exchange_offers SET status = ? WHERE id = ?', ['completed', offerId]);
+    await connection.execute('UPDATE exchange_requests SET status = ? WHERE id = ?', ['accepted', requestId]);
+    await connection.execute('UPDATE exchange_requests SET status = ? WHERE exchange_offer_id = ? AND id != ?', ['rejected', offerId, requestId]);
+    await connection.commit();
     res.json({ message: 'Exchange completed' });
   } catch (err) {
-    await db.rollback();
+    if (connection) await connection.rollback();
     console.error(err);
     res.status(500).json({ message: 'Error completing exchange' });
+  } finally {
+    if (connection) connection.release();
   }
 });
 

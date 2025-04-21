@@ -44,4 +44,14 @@ export class ExchangeService {
   cancelOffer(offerId: number) {
     return this.http.post(`${this.apiUrl}/${offerId}/cancel`, {});
   }
+
+  // Obtener todas las solicitudes hechas por el usuario autenticado
+  getMyRequests() {
+    return this.http.get<any[]>(`${this.apiUrl}/requests/mine`);
+  }
+
+  // Obtener todas las solicitudes para una oferta específica (solo dueño)
+  getRequestsForOffer(offerId: number) {
+    return this.http.get<any[]>(`${this.apiUrl}/${offerId}/requests`);
+  }
 }
