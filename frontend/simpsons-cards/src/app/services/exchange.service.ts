@@ -29,8 +29,8 @@ export class ExchangeService {
     return this.http.get<ExchangeOffer[]>(this.apiUrl);
   }
 
-  createOffer(card_id: number, min_rarity: string) {
-    return this.http.post(this.apiUrl, { card_id, min_rarity });
+  createOffer(cardId: number, minRarity: string) {
+    return this.http.post(this.apiUrl, { cardId, minRarity });
   }
 
   requestExchange(offerId: number, offered_card_id: number) {

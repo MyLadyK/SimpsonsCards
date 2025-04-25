@@ -150,12 +150,13 @@ router.put('/cards/:id', async (req, res) => {
 router.delete('/cards/:id', async (req, res) => {
   try {
     const cardId = req.params.id;
+    // Primero elimina todas las referencias en user_cards
+    await db.execute('DELETE FROM user_cards WHERE card_id = ?', [cardId]);
+    // Luego elimina la carta de cards
     const [result] = await db.execute('DELETE FROM cards WHERE id = ?', [cardId]);
-    
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Card not found' });
     }
-
     res.json({ message: 'Card deleted successfully' });
   } catch (error) {
     console.error('Error deleting card:', error);
